@@ -7,22 +7,35 @@ using namespace std;
 class Player
 {
 	public:
+
+		//constructor methods
 		Player() {};
+		Player(vector<Tile> playertiles){
+			tileslist = playertiles;
+		}
+
+		//destructor methos
 		~Player() {};
-		inline string addtile(Tile tile) {
-			tileslist.push_back(tile);
-			return "added";
+
+
+		void addtile(Tile tile) ;
+		
+		//returns all the tiles list of the users
+		inline vector<Tile> GetPlayerTiles() {
+			return tileslist;
 		}
-		inline Tile gettile() {
+
+		//this helps to return tile at a specific position
+		inline Tile gettile(int position) {
 			
-			return tileslist.back();
+			return tileslist.at(position);
 		}
-		bool GetNextTile(Tile& tile);
+		
+		void PlayMove();
 		
 
 	private:
 		std::vector <Tile> tileslist;
-
 
 };
 

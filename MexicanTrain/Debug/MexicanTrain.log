@@ -1,5 +1,9 @@
-﻿  Game.cpp
+﻿  Computer.cpp
+  Game.cpp
   MexicanTrain.cpp
+  Player.cpp
   Round.cpp
+  Train.cpp
+  User.cpp
   Generating Code...
   MexicanTrain.vcxproj -> C:\Users\tbish\source\repos\MexicanTrain\Debug\MexicanTrain.exe

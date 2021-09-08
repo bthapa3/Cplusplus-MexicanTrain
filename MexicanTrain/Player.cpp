@@ -1,6 +1,13 @@
 #include "Player.h"
 
-bool Player::GetNextTile(Tile& tile)
+
+
+void Player::addtile(Tile tile)
 {
-	return false;
+	tileslist.push_back(tile);
 }
+
+void Player::PlayMove()
+{
+}
+

@@ -77,6 +77,7 @@ vector<Tile> Deck::GetPlayerTiles() {
 
 };
 //returns the Computers Tiles
+
 vector<Tile> Deck::GetComputerTiles() {
 	vector<Tile> computertiles;
 	for (int i = 0; i < 16;i++) {

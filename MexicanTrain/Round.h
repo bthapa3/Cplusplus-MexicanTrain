@@ -2,6 +2,9 @@
 #include "Player.h"
 #include "Tile.h"
 #include "Deck.h"
+#include "User.h"
+#include "Computer.h"
+#include "Train.h"
 class Round
 {	
 	public:
@@ -10,27 +13,36 @@ class Round
 			engineTile = Tile();
 			usertrainmarked = false;
 			computertrainmarked = false;
+			computerplayer = new Computer();
+			userplayer = new User();
+
 
 		};
 		Round(int round) {
 			currentRound = round;
 			usertrainmarked = false;
 			computertrainmarked = false;
+			computerplayer = new Computer();
+			userplayer = new User();
 		}
 		~Round() {};
 		void Initializegame();
-		void PlayGame();
-		void MakeUserMoves();
+		void DisplayGame();
+		void PlayMoves();
 		void MakeComputerMoves();
 	private:
 		int currentRound;
-		vector <Tile> playerTiles;
-		vector <Tile> computerTiles;
 		vector <Tile> boneyardTiles;
-		vector<Tile> playerTrain;
-		vector<Tile> computerTrain;
-		vector<Tile> MexicanTrain;
+		
 		Tile engineTile;
+
+		vector<Tile> BoneyardTiles;
+
+		Train* computerTrain;
+		Train* mexicanTrain;
+		Train* playerTrain;
+		Computer* computerplayer;
+		User* userplayer;
 		bool usertrainmarked;
 		bool computertrainmarked;
 

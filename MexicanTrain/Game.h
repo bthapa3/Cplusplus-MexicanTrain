@@ -6,8 +6,8 @@ class Game
 		Game() 
 		{
 			userfirst = true;
-			userscore = 2;
-			computerscore = 1;
+			userscore = 0;
+			computerscore = 0;
 			currentround = 1;
 		}
 		void startGame();
