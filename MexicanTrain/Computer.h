@@ -1,5 +1,7 @@
 #pragma once
 #include "Player.h"
+#include <iostream>
+
 class Computer : public Player
 {
 public:
@@ -7,4 +9,6 @@ public:
 	Computer(vector <Tile> tiles) :Player(tiles)
 	{
 	};
+
+	virtual void PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard);
 };

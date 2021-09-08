@@ -13,8 +13,7 @@ class Round
 			engineTile = Tile();
 			usertrainmarked = false;
 			computertrainmarked = false;
-			computerplayer = new Computer();
-			userplayer = new User();
+			gameover = false;
 
 
 		};
@@ -22,8 +21,7 @@ class Round
 			currentRound = round;
 			usertrainmarked = false;
 			computertrainmarked = false;
-			computerplayer = new Computer();
-			userplayer = new User();
+			gameover = false;
 		}
 		~Round() {};
 		void Initializegame();
@@ -37,14 +35,13 @@ class Round
 		Tile engineTile;
 
 		vector<Tile> BoneyardTiles;
-
 		Train* computerTrain;
 		Train* mexicanTrain;
 		Train* playerTrain;
-		Computer* computerplayer;
-		User* userplayer;
+		Player * playersList[2];
 		bool usertrainmarked;
 		bool computertrainmarked;
+		bool gameover;
 
 };
 

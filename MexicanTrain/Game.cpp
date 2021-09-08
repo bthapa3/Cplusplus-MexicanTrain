@@ -48,8 +48,10 @@ void Game::startGame()
 
        // while (true) 
         //{
-        newround->DisplayGame();
-            //newround->PlayMoves();
+        //In future round class should run this loop and new round should have 
+        // initialize and start game and get the scores only
+        //newround->DisplayGame();
+        newround->PlayMoves();
             //newround->MakeComputerMoves();
         
         //}

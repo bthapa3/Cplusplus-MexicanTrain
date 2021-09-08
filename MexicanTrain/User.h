@@ -1,5 +1,9 @@
 #pragma once
 #include "Player.h"
+#include <string>
+#include <iostream>
+#include "Train.h"
+#include "Tile.h"
 class User : public Player
 {
 	public:
@@ -7,6 +11,6 @@ class User : public Player
 		User(vector<Tile> tiles):Player(tiles)
 		{
 		}
-
+		virtual void PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard);
 };
 

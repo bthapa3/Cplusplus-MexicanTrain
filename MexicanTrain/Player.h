@@ -3,6 +3,8 @@
 #include <vector>
 #include "Tile.h"
 #include<string>
+#include <iostream>
+#include "Train.h"
 using namespace std;
 class Player
 {
@@ -30,8 +32,17 @@ class Player
 			
 			return tileslist.at(position);
 		}
+		inline void AddtoBack(Tile tile) {
+			tileslist.push_back(tile);
+		}
+		void RemoveTile(int position);
+
+		void Mainmove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard) {
+			cout << "This is the main move" << endl;
+			PlayMove( userTrain,  computerTrain,  mexicanTrain, boneyard);
+		}
 		
-		void PlayMove();
+		virtual void PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard);
 		
 
 	private:

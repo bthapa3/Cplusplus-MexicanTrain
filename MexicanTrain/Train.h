@@ -7,19 +7,27 @@ using namespace std;
 class Train
 {
 	public:
-		Train() {};
+		Train() { trainmarked = false; };
 		Train( string typeoftrain ) 
 		{
 			typeoftrain = typeoftrain;
+			trainmarked = false;
 		}
-		void Addtiles(Tile tiletobeadded);
+		void Addtile(Tile tiletobeadded);
+
+		void RemoveTile(int position);
+
 		//returns all the tiles of the train
-		inline vector<Tile> ReturnAllTiles() {
+		inline vector<Tile> GetAllTiles() {
 			return traintiles;
 		};
+		inline bool isTrainMarked() {
+			return trainmarked;
+		}
 
 	private:
 		vector<Tile> traintiles;
 		string typeoftrain;
+		bool trainmarked;
 };
 

@@ -12,10 +12,10 @@ void Round::Initializegame() {
    
      
      //Computer Player for the game
-     computerplayer = new Computer(mydeck.GetComputerTiles());
+     playersList[0] = new Computer(mydeck.GetComputerTiles());
 
      //User player initialized with the random 16 tiles being assigned.
-     userplayer = new User(mydeck.GetPlayerTiles());
+     playersList[1] = new User(mydeck.GetPlayerTiles());
 
      
      
@@ -25,13 +25,13 @@ void Round::Initializegame() {
      
      //pushing engine tile to the player train,computer train and mexican as they start from there.
      playerTrain=  new Train("playertrain");
-     playerTrain->Addtiles(engineTile);
+     playerTrain->Addtile(engineTile);
 
      computerTrain=new Train("computertrain");
-     computerTrain->Addtiles(engineTile);
+     computerTrain->Addtile(engineTile);
 
      mexicanTrain = new Train("mexicantrain");
-     mexicanTrain->Addtiles(engineTile);
+     mexicanTrain->Addtile(engineTile);
     
 
 
@@ -43,7 +43,7 @@ void Round::DisplayGame()
     cout << " Player Tiles:" << endl;
     int counter = 0;
     
-    for (auto& it : userplayer->GetPlayerTiles()) {
+    for (auto& it : playersList[1]->GetPlayerTiles()) {
         counter++;
         // Print the values
         cout << " | " << "  (" << counter << ")-> " << it.GetSide1() << "-" << it.GetSide2() << " | ";
@@ -57,7 +57,7 @@ void Round::DisplayGame()
 
     cout << endl << endl << endl;
     cout << "                                        Player train" << endl;
-    for (auto& it : playerTrain->ReturnAllTiles()) {
+    for (auto& it : playerTrain->GetAllTiles()) {
         counter++;
         // Print the values
         cout << " | "  << it.GetSide1() << "-" << it.GetSide2() << " | ";
@@ -70,7 +70,7 @@ void Round::DisplayGame()
     cout << "                                           " << engineTile.GetSide2() << endl;
     
     cout << "                                        Computer train" << endl;
-    for (auto& it : computerTrain->ReturnAllTiles()) {
+    for (auto& it : computerTrain->GetAllTiles()) {
         counter++;
         // Print the values
         cout << " | "  << it.GetSide1() << "-" << it.GetSide2() << " | ";
@@ -80,7 +80,7 @@ void Round::DisplayGame()
     cout << endl << endl << endl;
     cout << " Computer Tiles:" << endl;
     counter = 0;
-    for (auto& it : computerplayer->GetPlayerTiles()) {
+    for (auto& it : playersList[0]->GetPlayerTiles()) {
         counter++;
         // Print the values
         cout << " | "  << "  (" << counter << ")-> " << it.GetSide1() << "-" << it.GetSide2() <<" | " ;
@@ -107,94 +107,22 @@ void Round::DisplayGame()
 void Round::PlayMoves()
 {
     
-    //this should call for player as well as computer moves.
-
-    /*unsigned int tilenumber = 0;
-    //if the tile chosen can be attached with train chosen.
-    bool validtile = false;
-    //validating the tilenumber so that user chooses a valid tilenumber to play
-    while(!validtile)
+    while (!gameover)
     {
-        cout << "please enter the tile(1-16) you want to pick" << endl;
-        cin >> tilenumber;
-        
-        if (tilenumber >= 1 && tilenumber <= playerTiles.size()) 
-        {
-            char train = 'X';
-            //validating the user chosen train
-            //User chosen tile to be attached at the end of the train
-            Tile nextmove = playerTiles.at(tilenumber - 1);
-
-            while (!(train == 'U' || train == 'C' || train == 'M'))
-            {
-                cout << "please enter the Train(U-user,C-computer,M-mexican) you want to pick" << endl;
-                cin >> train;
-                //more validation to be done here.
-                if (train == 'U')
-                {
-                    
-                    //moving a user chosen tile to a Player train
-                    if (nextmove.GetSide1() == playerTrain.back().GetSide1() || nextmove.GetSide2() == playerTrain.back().GetSide1())
-                    {
-                        playerTrain.push_back(nextmove);
-                        playerTiles.erase(playerTiles.begin() + tilenumber - 1);
-                        validtile = true;
-                    }
-                    else
-                    {
-                        cout << "The tile you chose cannot be placed on the user train" << endl;
-                        
-                    }
-                }
-                else if (train == 'C')
-                {
-                    if(computertrainmarked)
-                    {
-                        //moving a user chosen tile to a Computer train
-                        if (nextmove.GetSide1() == computerTrain.back().GetSide1() || nextmove.GetSide2() == computerTrain.back().GetSide1())
-                        {
-                            computerTrain.push_back(nextmove);
-                            playerTiles.erase(playerTiles.begin() + tilenumber - 1);
-                            validtile = true;
-                        }
-                        else
-                        {
-                            cout << "The tile you chose cannot be placed on the computer's train" << endl;
-
-                        }
-                    
-                    }
-                    else {
-                        cout << "You cannot add tiles to unmarked computer's train" << endl;
-                    }
-                    
-                }
-                else if (train == 'M')
-                {
-                    //moving a user chosen tile to a Computer train
-                    if (nextmove.GetSide1() == MexicanTrain.back().GetSide1() || nextmove.GetSide2() == MexicanTrain.back().GetSide1())
-                    {
-                        MexicanTrain.push_back(nextmove);
-                        playerTiles.erase(playerTiles.begin() + tilenumber - 1);
-                        validtile = true;
-                    }
-                    else
-                    {
-                        cout << "The tile you chose cannot be placed on the Mexican train" << endl;
-
-                    }
-                }
-
-            }
-        }
-        else
-        {
-            cout << "Enter a valid tile" << endl;
-        }
-        
-        
+        //DisplayGame();
+        playersList[0]->Mainmove( *playerTrain, *computerTrain,*mexicanTrain, boneyardTiles );
+        playersList[1]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles);
+        int userinput;
+        cin >> userinput;
+        cout << "user input is done" << endl;
     }
-    */
+   
+
+    //returns the round score here.
+    
+
+    
+ 
       
 }
 
