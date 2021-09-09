@@ -11,6 +11,7 @@ class User : public Player
 		User(vector<Tile> tiles):Player(tiles)
 		{
 		}
-		virtual bool PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard);
+		virtual bool PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard, int continuedmove);
+	    
 };
 

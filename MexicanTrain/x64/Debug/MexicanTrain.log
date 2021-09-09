@@ -1,12 +1,2 @@
-﻿  Computer.cpp
-  Deck.cpp
-C:\Users\tbish\source\repos\MexicanTrain\MexicanTrain\Deck.cpp(17,49): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  Game.cpp
-  MexicanTrain.cpp
-  Player.cpp
-  Round.cpp
-  Tile.cpp
-  Train.cpp
-  User.cpp
-  Generating Code...
-  MexicanTrain.vcxproj -> C:\Users\tbish\source\repos\MexicanTrain\x64\Debug\MexicanTrain.exe
+﻿  User.cpp
+  MexicanTrain.vcxproj -> C:\Users\tbish\OneDrive\Desktop\OPL\MexicanTrain\x64\Debug\MexicanTrain.exe

@@ -43,17 +43,19 @@ class Player
 		//checks if orphan double is present or not
 		bool OrphanDoublePresent(Train& userTrain, Train& computerTrain, Train& mexicanTrain, char & train);
 
-		void Mainmove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard); 
+		bool Mainmove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard, int continuedplay); 
 
 		void WinningMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard);
 		
-		virtual bool PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard);
+		virtual bool PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard, int continuedmove);
 
 		
-		
+		void PickBoneyard(vector<Tile> boneyard);
+		int getValidTile();
 
 	private:
 		std::vector <Tile> tileslist;
+
 
 };
 

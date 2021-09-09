@@ -1,22 +1,28 @@
 #include "Computer.h"
 
-bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard)
+bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard,int continuedmove)
 {
 	
-	cout << "This move is made by the computer" << endl;
+	cout << "-------------COMPUTER TURN----------------" << endl;
 
 
 	unsigned int tilenumber = 0;
 	//if the tile chosen can be attached with train chosen.
 	bool validtile = false;
+	bool replay = false;
 	//validating the tilenumber so that user chooses a valid tilenumber to play
 	while (!validtile)
 	{
 
 		do
 		{
-			cout << "please enter the tile(1-16) you want to pick" << endl;
-			cin >> tilenumber;
+			cout << "Options:" << endl;
+			cout << "Enter the tile(1-16) if you want to add to valid train" << endl;
+			cout << "Enter B if you donot have any valid tile" << endl;
+			cout << "Enter H if you need suggestions for your next step" << endl;
+			cout << ">>";
+ 			cin >> tilenumber;
+			
 
 
 			//Help taken from https://stackoverflow.com/questions/5864540/infinite-loop-with-cin-when-typing-string-while-a-number-is-expected
@@ -51,7 +57,7 @@ bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTr
 				cin >> train;
 
 				char orphandoubletrain = 'X';
-				if (OrphanDoublePresent(userTrain, computerTrain, mexicanTrain, orphandoubletrain))
+				if ((continuedmove < 1) &&  OrphanDoublePresent(userTrain, computerTrain, mexicanTrain, orphandoubletrain))
 				{
 					while (train != orphandoubletrain)
 					{
@@ -70,10 +76,11 @@ bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTr
 						//this gives one extra chance in condition of OrphanDouble
 						if (nextmove.GetSide1() == nextmove.GetSide2()) {
 							cout << "You get one more chance to play" << endl;
+							replay = true;
 						}
-						else {
-							validtile = true;
-						}
+						
+						validtile = true;
+						
 					}
 					else
 					{
@@ -83,7 +90,7 @@ bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTr
 				}
 				else if (train == 'U')
 				{
-					if (userTrain.isTrainMarked())
+					if (userTrain.isTrainMarked() || orphandoubletrain== 'U')
 					{
 
 						//moving  a chosen tile to a computer's train. Only possible when there is 
@@ -92,10 +99,11 @@ bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTr
 							//this gives one extra chance in condition of OrphanDouble
 							if (nextmove.GetSide1() == nextmove.GetSide2()) {
 								cout << "You get one more chance to play" << endl;
+								replay = true;
 							}
-							else {
-								validtile = true;
-							}
+							
+							validtile = true;
+							
 						}
 						else
 						{
@@ -117,10 +125,11 @@ bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTr
 						//this gives one extra chance in condition of OrphanDouble
 						if (nextmove.GetSide1() == nextmove.GetSide2()) {
 							cout << "You get one more chance to play" << endl;
+							replay = true;
 						}
-						else {
-							validtile = true;
-						}
+						
+						validtile = true;
+						
 					}
 					else
 					{
@@ -138,5 +147,5 @@ bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTr
 
 
 	}
-	return validtile;
+	return replay;
 }

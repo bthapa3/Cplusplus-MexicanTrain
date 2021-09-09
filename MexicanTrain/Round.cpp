@@ -66,7 +66,15 @@ void Round::DisplayGame()
     cout << endl;
     cout << "                                        engine tile" << endl;
     cout << "                                           " << engineTile.GetSide1()<< endl;
-    cout << "                                           " << "|" << endl;
+    cout << "                                           " << "|" ;
+
+    for (auto& it : mexicanTrain->GetAllTiles()) {
+        counter++;
+        // Print the values
+        cout << " | " << it.GetSide1() << "-" << it.GetSide2() << " | ";
+
+    }
+    cout << endl;
     cout << "                                           " << engineTile.GetSide2() << endl;
     
     cout << "                                        Computer train" << endl;
@@ -118,12 +126,33 @@ void Round::PlayMoves(bool playerfirst)
     {
         
         DisplayGame();
+        bool replay = false;
         //this one is computer
+        int continousplay = 0;
 
-        playersList[0]->Mainmove( *playerTrain, *computerTrain,*mexicanTrain, boneyardTiles );
-        system("CLS");
-        DisplayGame();
-        playersList[1]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles);
+        do
+        {   //this will help the user to replay a turn in case of the orphan double
+            replay= playersList[0]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles,continousplay);
+            DisplayGame();
+            continousplay++;
+
+
+            cout << " compiter runs" << endl;
+        }while (replay);
+
+        //resetting the continous play to 0 as new user is playing
+        continousplay = 0;
+   
+        do
+        {
+            //this will help the user to replay a turn in case of the orphan double
+            replay = playersList[1]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles, continousplay);
+            DisplayGame();
+
+            continousplay++;
+            cout << " user runs" << endl;
+        } while (replay);
+
         
     }
    

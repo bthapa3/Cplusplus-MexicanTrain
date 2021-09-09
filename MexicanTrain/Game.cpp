@@ -50,7 +50,7 @@ void Game::startGame()
         //{
         //In future round class should run this loop and new round should have 
         // initialize and start game and get the scores only
-        newround->DisplayGame();
+        //newround->DisplayGame();
         newround->PlayMoves(userfirst);
             //newround->MakeComputerMoves();
         
