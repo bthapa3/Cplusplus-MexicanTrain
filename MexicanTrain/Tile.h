@@ -20,6 +20,7 @@ class Tile
 		inline int GetSide2() {
 			return side2;
 		}
+		void Filpside();
 	private:
 
 		int side1;

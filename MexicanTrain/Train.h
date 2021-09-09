@@ -12,6 +12,7 @@ class Train
 		{
 			typeoftrain = typeoftrain;
 			trainmarked = false;
+			orphandoubled = false;
 		}
 		void Addtile(Tile tiletobeadded);
 
@@ -23,11 +24,16 @@ class Train
 		};
 		inline bool isTrainMarked() {
 			return trainmarked;
+		};
+
+		inline Tile GetTop() {
+			return traintiles.back();
 		}
 
 	private:
 		vector<Tile> traintiles;
 		string typeoftrain;
 		bool trainmarked;
+		bool orphandoubled;
 };
 

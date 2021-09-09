@@ -104,17 +104,27 @@ void Round::DisplayGame()
     cout << endl;
 }
 
-void Round::PlayMoves()
+void Round::PlayMoves(bool playerfirst)
 {
-    
-    while (!gameover)
+    //this helps to run the player first or computer first sequence
+   // if (playerfirst) {
+     //   playersList[1]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles);
+      // system("CLS");
+    //}/
+    ///
+
+    //game continues until boneyard tile, usertiles of
+    while ( (boneyardTiles.size()!=0) && (playersList[0]->GetPlayerTiles().size()!=0) && (playersList[0]->GetPlayerTiles().size() != 0))
     {
-        //DisplayGame();
+        
+        DisplayGame();
+        //this one is computer
+
         playersList[0]->Mainmove( *playerTrain, *computerTrain,*mexicanTrain, boneyardTiles );
+        system("CLS");
+        DisplayGame();
         playersList[1]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles);
-        int userinput;
-        cin >> userinput;
-        cout << "user input is done" << endl;
+        
     }
    
 
@@ -126,8 +136,4 @@ void Round::PlayMoves()
       
 }
 
-void Round::MakeComputerMoves()
-{
-    cout << "computer should choose the best move!" << endl;
-    system("CLS");
-}
+

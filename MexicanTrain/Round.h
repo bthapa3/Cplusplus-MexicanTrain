@@ -26,8 +26,8 @@ class Round
 		~Round() {};
 		void Initializegame();
 		void DisplayGame();
-		void PlayMoves();
-		void MakeComputerMoves();
+		void PlayMoves(bool userfirst);
+		
 	private:
 		int currentRound;
 		vector <Tile> boneyardTiles;
@@ -35,6 +35,7 @@ class Round
 		Tile engineTile;
 
 		vector<Tile> BoneyardTiles;
+
 		Train* computerTrain;
 		Train* mexicanTrain;
 		Train* playerTrain;

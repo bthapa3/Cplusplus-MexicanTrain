@@ -22,6 +22,9 @@ class Player
 
 		void addtile(Tile tile) ;
 		
+		//this tries to move tile to a specific train and returns true if possible
+		//online checks the matching tile given tile marker is already checked.
+		bool CheckTrainMove(Train& Train, Tile tile, int tilenumber);
 		//returns all the tiles list of the users
 		inline vector<Tile> GetPlayerTiles() {
 			return tileslist;
@@ -37,12 +40,16 @@ class Player
 		}
 		void RemoveTile(int position);
 
-		void Mainmove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard) {
-			cout << "This is the main move" << endl;
-			PlayMove( userTrain,  computerTrain,  mexicanTrain, boneyard);
-		}
+		//checks if orphan double is present or not
+		bool OrphanDoublePresent(Train& userTrain, Train& computerTrain, Train& mexicanTrain, char & train);
+
+		void Mainmove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard); 
+
+		void WinningMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard);
 		
-		virtual void PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard);
+		virtual bool PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard);
+
+		
 		
 
 	private:
