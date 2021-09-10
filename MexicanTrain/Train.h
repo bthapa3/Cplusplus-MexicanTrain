@@ -29,6 +29,12 @@ class Train
 		inline Tile GetTop() {
 			return traintiles.back();
 		}
+		inline void MarkTrain() {
+			trainmarked = true;
+		}
+		inline void RemoveMark() {
+			trainmarked = false;
+		}
 
 	private:
 		vector<Tile> traintiles;

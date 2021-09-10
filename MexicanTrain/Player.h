@@ -49,8 +49,10 @@ class Player
 		
 		virtual bool PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard, int continuedmove);
 
-		
-		void PickBoneyard(vector<Tile> boneyard);
+		//this function helps to pick a front tile from the boneyard and move to the user tile list.
+		void PickBoneyard(vector<Tile> &boneyard, Train & train);
+
+		//returns a tile number that user picks to play
 		int getValidTile();
 
 	private:

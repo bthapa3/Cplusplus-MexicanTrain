@@ -122,10 +122,13 @@ void Round::PlayMoves(bool playerfirst)
     ///
 
     //game continues until boneyard tile, usertiles of
+
+    //displaying a game before a user makes a move initially
+    DisplayGame();
     while ( (boneyardTiles.size()!=0) && (playersList[0]->GetPlayerTiles().size()!=0) && (playersList[0]->GetPlayerTiles().size() != 0))
     {
         
-        DisplayGame();
+       
         bool replay = false;
         //this one is computer
         int continousplay = 0;
@@ -133,11 +136,10 @@ void Round::PlayMoves(bool playerfirst)
         do
         {   //this will help the user to replay a turn in case of the orphan double
             replay= playersList[0]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles,continousplay);
+            system("CLS");
             DisplayGame();
             continousplay++;
-
-
-            cout << " compiter runs" << endl;
+            cout << " computer runs" << endl;
         }while (replay);
 
         //resetting the continous play to 0 as new user is playing
@@ -147,8 +149,8 @@ void Round::PlayMoves(bool playerfirst)
         {
             //this will help the user to replay a turn in case of the orphan double
             replay = playersList[1]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles, continousplay);
+            system("CLS");
             DisplayGame();
-
             continousplay++;
             cout << " user runs" << endl;
         } while (replay);

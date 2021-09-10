@@ -15,6 +15,13 @@ bool User::PlayMove( Train & userTrain, Train& computerTrain, Train& mexicanTrai
 		char input='X';
 		
 		do {
+
+			//if the same players turn is repeated twice.
+			if (continuedmove >= 1) {
+				cout << "You got one more move as you played a double tile" << endl;
+				cout << "-----------------------------------------------------" << endl;
+			}
+
 			
 			cout << "Options:" << endl;
 			cout << " (U) --> add tile to the User train" << endl;
@@ -28,31 +35,34 @@ bool User::PlayMove( Train & userTrain, Train& computerTrain, Train& mexicanTrai
 		} while (input != 'U' && input != 'C' && input != 'M' && input != 'B' && input != 'H' && input != 'S');
 
 		if (input == 'B') {
-			PickBoneyard(boneyard);
+			PickBoneyard(boneyard,userTrain);
 			return false;
 		}
 		
 		else if ((input == 'U' || input == 'C' || input == 'M'))
 		{
 			
-			Tile nextmove = GetPlayerTiles().at(getValidTile() - 1);
 			char train = input;
 			char orphandoubletrain = 'X';
 			if ((continuedmove < 1) && OrphanDoublePresent(userTrain, computerTrain, mexicanTrain, orphandoubletrain))
 			{
 				while (train != orphandoubletrain)
 				{
-					cout << "You must play on Orphan double Train. Select accordingly!" << endl;
+					cout << "You must play on Orphan double Train! Select (U) or (C) train!" << endl;
+					cout << ">>";
 					cin >> train;
 				}
 				//one more time user can play
 
 			}
-
+			
+			
 			//more validation to be done here.
 			if (train == 'U')
 			{
-
+				//getting the players tile number input from the user.
+				tilenumber = getValidTile();
+				Tile nextmove = GetPlayerTiles().at(tilenumber - 1);
 				//Check TrainMove check if the move to the Train is valid or not and returns true if the 
 				//move was successful.
 				if (CheckTrainMove(userTrain, nextmove, tilenumber)) {
@@ -62,7 +72,7 @@ bool User::PlayMove( Train & userTrain, Train& computerTrain, Train& mexicanTrai
 						replay = true;
 					}
 					validtile = true;
-
+					userTrain.RemoveMark();
 				}
 				else
 				{
@@ -74,7 +84,10 @@ bool User::PlayMove( Train & userTrain, Train& computerTrain, Train& mexicanTrai
 			{
 				if (computerTrain.isTrainMarked() || orphandoubletrain == 'C')
 				{
-
+					//getting the players tile number input from the user.
+					//cannot keep these two lines of code outside as input is only asked after checking the validity of train.
+					tilenumber = getValidTile();
+					Tile nextmove = GetPlayerTiles().at(tilenumber - 1);
 					//moving  a chosen tile to a computer's train. Only possible when there is 
 					//marker at the end of the train.
 					if (CheckTrainMove(computerTrain, nextmove, tilenumber)) {
@@ -101,6 +114,9 @@ bool User::PlayMove( Train & userTrain, Train& computerTrain, Train& mexicanTrai
 			}
 			else if (train == 'M')
 			{
+				//getting the players tile number input from the user.
+				tilenumber = getValidTile();
+				Tile nextmove = GetPlayerTiles().at(tilenumber - 1);
 				//moving a user chosen tile to a Computer train
 				if (CheckTrainMove(mexicanTrain, nextmove, tilenumber))
 				{

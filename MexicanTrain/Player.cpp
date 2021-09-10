@@ -12,13 +12,18 @@ bool Player::CheckTrainMove(Train& Train, Tile tile, int tilenumber)
 	//moving a user chosen tile to a Player train
 	if (tile.GetSide1() == Train.GetAllTiles().back().GetSide2() || tile.GetSide2() == Train.GetAllTiles().back().GetSide2())
 	{
-		
+
+
 		//if this is a double tile next tile is flipped accordingly
-		if (Train.GetAllTiles().back().GetSide1() == Train.GetAllTiles().back().GetSide2()  && tile.GetSide1() != Train.GetAllTiles().back().GetSide2()) {
+		if (Train.GetAllTiles().back().GetSide1() == Train.GetAllTiles().back().GetSide2()  && 
+			(tile.GetSide1() != Train.GetAllTiles().back().GetSide2())) 
+		{
 			tile.Filpside();
 		}
 		//two consecutive tiles are flipped in order to set matching number to each other.
-		else if (tile.GetSide1() == Train.GetAllTiles().back().GetSide1()) {
+		else if ((Train.GetAllTiles().back().GetSide1() != Train.GetAllTiles().back().GetSide2()) && 
+			tile.GetSide1() == Train.GetAllTiles().back().GetSide1() || tile.GetSide2() == Train.GetAllTiles().back().GetSide2()) 
+		{
 			tile.Filpside();
 		}
 		//adds tile to the Train
@@ -87,11 +92,12 @@ bool Player::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrai
 }
 
 
-void Player::PickBoneyard(vector<Tile> boneyard)
+void Player::PickBoneyard(vector<Tile> &boneyard, Train & train)
 {
 	Tile boneyardfront = boneyard.front();
 	boneyard.erase(boneyard.begin());
 	AddtoBack(boneyardfront);
+	train.MarkTrain();
 }
 
 int Player::getValidTile()
