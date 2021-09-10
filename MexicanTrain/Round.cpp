@@ -114,23 +114,32 @@ void Round::DisplayGame()
 
 void Round::PlayMoves(bool playerfirst)
 {
-    //this helps to run the player first or computer first sequence
-   // if (playerfirst) {
-     //   playersList[1]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles);
-      // system("CLS");
-    //}/
-    ///
-
-    //game continues until boneyard tile, usertiles of
-
-    //displaying a game before a user makes a move initially
+    
+    //display a game tiles before the move is made by either a computer or an user.
     DisplayGame();
+    //this helps to run the player first or computer first sequence
+    if (playerfirst) {
+        
+        bool replay = false;
+        int continousplay = 0;
+       
+        do
+        {
+            //this will help the user to replay a turn in case of the orphan double
+            replay = playersList[1]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles, continousplay);
+            system("CLS");
+            DisplayGame();
+            continousplay++;
+            cout << " user runs" << endl;
+        } while (replay);
+    }
+
+   
     while ( (boneyardTiles.size()!=0) && (playersList[0]->GetPlayerTiles().size()!=0) && (playersList[0]->GetPlayerTiles().size() != 0))
     {
         
-       
+        
         bool replay = false;
-        //this one is computer
         int continousplay = 0;
 
         do

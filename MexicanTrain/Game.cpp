@@ -6,59 +6,75 @@ void Game::startGame()
     char input;
     while (!stopgame) {
 
-        char toss;
+        int toss = -1;
         if (computerscore == userscore)
         {
-            do 
+            //This does the player toss when the game is started
+            // For the next rounds the players with lower score goes first.
+            do
             {
-                cout << "TOSS:  Please choose 0- for head or 1- for tails " << endl;
+
+                cout << "Choose 0 for heads and 1 for tails" << endl;
+                cout << ">>";
                 cin >> toss;
-            } while (toss!='0' && toss!='1');
+
+
+                //Help taken from https://stackoverflow.com/questions/5864540/infinite-loop-with-cin-when-typing-string-while-a-number-is-expected
+                //this helps for input validation and handles string input for the number. 
+                if (cin.fail())
+                {
+                    cout << "ERROR -- You entered an invalid input!!!";
+
+                    // get rid of failure state
+                    cin.clear();
+
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    toss = -1;
+                }
+
+            } while (toss > 1 || toss < 0);
 
 
             srand((unsigned)time(0));
             int randomNumber = (rand() % 2);
-
-            cout << "Toss value: " << randomNumber << endl;
-            if ((randomNumber == 0 && toss == '0') || (randomNumber == 1 && toss == '1'))
+            cout << "_____________________________________________________________" << endl;
+            cout << "Your input: " << toss << " Toss value: " << randomNumber << endl;
+            cout << "_____________________________________________________________" << endl;
+            if ((randomNumber == 0 && toss == 0) || (randomNumber == 1 && toss == 1))
             {
                 userfirst = true;
                 cout << "You won the toss! Go first." << endl;
+
             }
             else
             {
                 userfirst = false;
                 cout << "Computer won the toss! Computer goes first" << endl;
             }
+            cout << "_____________________________________________________________" << endl;
         }
-        else if (computerscore< userscore)
+        else if (computerscore < userscore)
         {
             userfirst = false;
             cout << "Computer goes first as computer is trailing behind in the score!" << endl;
         }
-        else 
+        else
         {
             userfirst = true;
             cout << "User goes first as User is trailing behind in the score!" << endl;
         }
 
-        Round *newround =new Round(currentround);
+        //Round object that holds vlaues of a particular round.
+        Round* newround = new Round(currentround);
+        //Initialized the tiles and trains for the new round.
         newround->Initializegame();
-        
-
-       // while (true) 
-        //{
-        //In future round class should run this loop and new round should have 
-        // initialize and start game and get the scores only
-        //newround->DisplayGame();
+        //starts the game for the new round.this countinues until the game is over.
         newround->PlayMoves(userfirst);
-            //newround->MakeComputerMoves();
-        
-        //}
 
+        //This runs once the game is over.
         cout << "Do you want to play another game? Else press anyother key";
         cin >> input;
-        if (input != 'y') 
+        if (input != 'y')
         {
             stopgame = true;
         }
@@ -67,3 +83,5 @@ void Game::startGame()
         }
     }
 }
+
+
