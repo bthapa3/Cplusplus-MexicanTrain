@@ -135,6 +135,7 @@ void Round::PlayMoves(bool playerfirst)
     }
 
    
+
     while ( (boneyardTiles.size()!=0) && (playersList[0]->GetPlayerTiles().size()!=0) && (playersList[0]->GetPlayerTiles().size() != 0))
     {
         
@@ -154,23 +155,35 @@ void Round::PlayMoves(bool playerfirst)
         //resetting the continous play to 0 as new user is playing
         continousplay = 0;
    
-        do
+        if ((boneyardTiles.size() != 0) && (playersList[0]->GetPlayerTiles().size() != 0) && (playersList[0]->GetPlayerTiles().size() != 0))
         {
-            //this will help the user to replay a turn in case of the orphan double
-            replay = playersList[1]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles, continousplay);
-            system("CLS");
-            DisplayGame();
-            continousplay++;
-            cout << " user runs" << endl;
-        } while (replay);
-
+            do
+            {
+                //this will help the user to replay a turn in case of the orphan double
+                replay = playersList[1]->Mainmove(*playerTrain, *computerTrain, *mexicanTrain, boneyardTiles, continousplay);
+                system("CLS");
+                DisplayGame();
+                continousplay++;
+                cout << " user runs" << endl;
+            } while (replay);
+        
+        }
+        
         
     }
    
 
-    //returns the round score here.
-    
+    //calculates the round score after the end of the game.
+    for (auto& it : playersList[1]->GetPlayerTiles()) {
+       
+        playerscore = playerscore+  it.GetSide1() + it.GetSide2();
+        
+    }
+    for (auto& it : playersList[0]->GetPlayerTiles()) {
 
+        computerscore = computerscore+ it.GetSide1() + it.GetSide2();
+        
+    }
     
  
       

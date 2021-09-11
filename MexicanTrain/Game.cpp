@@ -3,7 +3,7 @@
 void Game::startGame()
 {
     bool stopgame = false;
-    char input;
+    
     while (!stopgame) {
 
         int toss = -1;
@@ -69,16 +69,44 @@ void Game::startGame()
         //Initialized the tiles and trains for the new round.
         newround->Initializegame();
         //starts the game for the new round.this countinues until the game is over.
+       
         newround->PlayMoves(userfirst);
+        
+        cout << "The player score for the round is:" << newround->playerRoundscore() << endl;
+        cout << "The computer score for the round is:" << newround->computerRoundscore() << endl;
+        computerscore = computerscore + newround->computerRoundscore();
+        userscore = userscore + newround->playerRoundscore();
 
         //This runs once the game is over.
-        cout << "Do you want to play another game? Else press anyother key";
-        cin >> input;
-        if (input != 'y')
+        //using string for input rather than char so that if user enters string program doesnot runs the loop multiple times.
+        string input;
+        do
+        {
+
+            cout << "Do you want to play another game? PRESS 'Y' or 'N'" << endl;
+            cout << ">>";
+            cin >> input;
+
+            //Help taken from https://stackoverflow.com/questions/5864540/infinite-loop-with-cin-when-typing-string-while-a-number-is-expected
+            //this helps for input validation and handles string input for the number. 
+            if (cin.fail())
+            {
+                cout << "ERROR -- You entered an invalid input!!!";
+
+                // get rid of failure state
+                cin.clear();
+
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                input = "X";
+            }
+
+        } while (input!="Y" && input!="N");
+
+        if (input == "N")
         {
             stopgame = true;
         }
-        else {
+        else if(input=="Y") {
             currentround++;
         }
     }

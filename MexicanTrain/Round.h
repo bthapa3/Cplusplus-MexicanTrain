@@ -14,7 +14,8 @@ class Round
 			usertrainmarked = false;
 			computertrainmarked = false;
 			gameover = false;
-
+			playerscore = 0;
+			computerscore = 0;
 
 		};
 		Round(int round) {
@@ -22,11 +23,21 @@ class Round
 			usertrainmarked = false;
 			computertrainmarked = false;
 			gameover = false;
+			playerscore = 0;
+			computerscore = 0;
 		}
 		~Round() {};
 		void Initializegame();
 		void DisplayGame();
 		void PlayMoves(bool userfirst);
+		inline int playerRoundscore() {
+			return playerscore;
+		}
+		inline int computerRoundscore() {
+			return computerscore;
+		}
+
+
 		
 	private:
 		int currentRound;
@@ -43,6 +54,8 @@ class Round
 		bool usertrainmarked;
 		bool computertrainmarked;
 		bool gameover;
+		int playerscore;
+		int computerscore;
 
 };
 
