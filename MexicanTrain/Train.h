@@ -7,24 +7,34 @@ using namespace std;
 class Train
 {
 	public:
-		Train() { trainmarked = false; };
-		Train( string typeoftrain ) 
+
+		Train() {
+		}
+		Train( string train ) 
 		{
-			typeoftrain = typeoftrain;
+			typeoftrain = train;
 			trainmarked = false;
 			orphandoubled = false;
 		}
+		~Train() {};
 		void Addtile(Tile tiletobeadded);
 
 		void RemoveTile(int position);
 
 		//returns all the tiles of the train
 		inline vector<Tile> GetAllTiles() {
+
 			return traintiles;
 		};
+
 		inline bool isTrainMarked() {
 			return trainmarked;
 		};
+
+		inline string marked() {
+			if (trainmarked) return "ON";
+			else return "OFF";
+		}
 
 		inline Tile GetTop() {
 			return traintiles.back();
@@ -34,6 +44,12 @@ class Train
 		}
 		inline void RemoveMark() {
 			trainmarked = false;
+		}
+		inline int Size() {
+			return traintiles.size();
+		}
+		inline string trainType() {
+			return typeoftrain;
 		}
 
 	private:

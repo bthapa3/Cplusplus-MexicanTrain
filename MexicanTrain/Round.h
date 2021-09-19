@@ -5,6 +5,7 @@
 #include "User.h"
 #include "Computer.h"
 #include "Train.h"
+#include <iomanip>
 class Round
 {	
 	public:
@@ -30,15 +31,24 @@ class Round
 		void Initializegame();
 		void DisplayGame();
 		void PlayMoves(bool userfirst);
+		bool Playpossible();
 		inline int playerRoundscore() {
 			return playerscore;
 		}
 		inline int computerRoundscore() {
 			return computerscore;
 		}
+		void DisplayComputerdouble(int spacing);
 
+		void DisplayComputerMiddleTile(int spacing);
+		void DisplayPlayerMiddleTile(int spacing);
+		void DisplayPlayerDouble(int spacing);
 
-		
+		void DisplayMexicanMiddleTile(int spacing);
+		void DisplayMexicanDouble(int spacing);
+
+		void DisplayallTiles(vector<Tile> tiles);
+
 	private:
 		int currentRound;
 		vector <Tile> boneyardTiles;
@@ -46,10 +56,10 @@ class Round
 		Tile engineTile;
 
 		vector<Tile> BoneyardTiles;
-
-		Train* computerTrain;
-		Train* mexicanTrain;
-		Train* playerTrain;
+		Train * trainsList[3];
+		//Train* computerTrain;
+		//Train* mexicanTrain;
+		//Train* playerTrain;
 		Player * playersList[2];
 		bool usertrainmarked;
 		bool computertrainmarked;

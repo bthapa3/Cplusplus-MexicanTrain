@@ -1,9 +1,24 @@
 #include "Computer.h"
 
-bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTrain, vector<Tile>& boneyard,int continuedmove)
+bool Computer::PlayMove(Train* trainslist[], vector<Tile>& boneyard,int continuedmove)
 {
 	
-	cout << "-------------COMPUTER TURN----------------" << endl;
+	
+	
+	
+	WinningStrategy(trainslist,boneyard);
+
+	
+	
+	return false;
+	
+	
+	
+	
+	
+	
+	
+	/*cout << "-------------COMPUTER TURN----------------" << endl;
 
 
 	unsigned int tilenumber = 0;
@@ -25,19 +40,24 @@ bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTr
 
 			//printing all the eligible options to the user
 
-			cout << "Options:" << endl;
-			cout << " (U) --> add tile to the User train" << endl;
-			cout << " (C) --> add tile to the Computer train" << endl;
-			cout << " (M) --> add tile to the Mexican train" << endl;
-			cout << " (B) --> pick a tile from boneyard if no valid tile" << endl;
-			cout << " (H) --> get help for the next move" << endl;
-			cout << " (S) --> serialize and quit" << endl;
-			cout << ">>";
-			cin >> input;
+			input = Displayoptions();
 		} while (input != 'U' && input != 'C' && input != 'M' && input != 'B' && input != 'H' && input != 'S');
 
 		if (input == 'B') {
-			PickBoneyard(boneyard,computerTrain);
+			
+			
+			Tile boneyardtile = boneyard.at(0);
+			cout << "_____________________________________________________________________________________" << endl;
+			cout << "Picked boneyard tile is: " << boneyardtile.GetSide1() << '-' << boneyardtile.GetSide2() << endl;
+			cout << "Place it to a valid train or press B again to skip your turn" << endl;
+			cout << "_____________________________________________________________________________________" << endl;
+
+
+			//if statement is true only if there was a tile on a boneyard.
+			//else turn is skipped 
+			if (PickBoneyard(boneyard, **(trainslist + 1))) {
+				BoneyardtoTrain(trainslist, replay, validtile);
+			}
 			return false;
 		}
 		
@@ -46,14 +66,24 @@ bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTr
 			
 			char train = input;
 			char orphandoubletrain = 'X';
-			if ((continuedmove < 1) && OrphanDoublePresent(userTrain, computerTrain, mexicanTrain, orphandoubletrain))
+			if ((continuedmove < 1) && OrphanDoublePresent(trainslist , orphandoubletrain))
 			{
-				while (train != orphandoubletrain)
+				while (train != orphandoubletrain && train != 'B')
 				{
-					cout << "You must play on Orphan double Train. Select accordingly!" << endl;
+					cout << "You must play on Orphan double Train! or Select boneyard tiles!" << endl;
+					cout << ">>";
 					cin >> train;
 				}
 				//one more time user can play
+				if (train == 'B') {
+					//take him to boneyard tile path.
+					Tile boneyardtile = boneyard.at(0);
+					cout << "Picked boneyard tile is" << boneyardtile.GetSide1() << '-' << boneyardtile.GetSide2() << endl;
+					if (PickBoneyard(boneyard, **(trainslist + 1))) {
+						BoneyardtoTrain(trainslist , replay, validtile);
+					}
+					return false;
+				}
 
 			}
 			
@@ -61,51 +91,32 @@ bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTr
 			//more validation to be done here.
 			if (train == 'C')
 			{
-				tilenumber = getValidTile();
-				Tile nextmove = GetPlayerTiles().at(tilenumber - 1);
+				if (continuedmove == 1) {
 
-				//Check TrainMove check if the move to the Train is valid or not and returns true if the 
-				//move was successful.
-				if (CheckTrainMove(computerTrain, nextmove, tilenumber)) {
-					//this gives one extra chance in condition of OrphanDouble
-					if (nextmove.GetSide1() == nextmove.GetSide2()) {
-						cout << "You get one more chance to play" << endl;
-						replay = true;
+					if (CheckandPlace(trainslist, **(trainslist + 1), replay, validtile, "Computer")) {
+						(**(trainslist + 1)).RemoveMark();
 					}
-
-					validtile = true;
-					computerTrain.RemoveMark();
-
 				}
-				else
-				{
-					cout << "The tile you chose cannot be placed on the computer train" << endl;
-
+				else {
+					PlaceTiletoTrain(**(trainslist + 1), replay, validtile, "Computer");
+					if ((**(trainslist + 1)).isTrainMarked())
+					{
+						(**(trainslist + 1)).RemoveMark();
+					}
 				}
+				
+				
 			}
 			else if (train == 'U')
 			{
-				if (userTrain.isTrainMarked() || orphandoubletrain == 'U')
+				if ((**(trainslist)).isTrainMarked() || orphandoubletrain == 'U')
 				{
-					//only getting the input after checking the train is marked.
-					tilenumber = getValidTile();
-					Tile nextmove = GetPlayerTiles().at(tilenumber - 1);
+					if (continuedmove == 1) {
 
-					//moving  a chosen tile to a computer's train. Only possible when there is 
-					//marker at the end of the train.
-					if (CheckTrainMove(userTrain, nextmove, tilenumber)) {
-						//this gives one extra chance in condition of OrphanDouble
-						if (nextmove.GetSide1() == nextmove.GetSide2()) {
-							cout << "You get one more chance to play" << endl;
-							replay = true;
-						}
-						validtile = true;
-
+						CheckandPlace(trainslist, **(trainslist),replay, validtile, "User");
 					}
-					else
-					{
-						cout << "The tile you chose cannot be placed on the user's train" << endl;
-
+					else {
+						PlaceTiletoTrain(**(trainslist), replay, validtile, "User");
 					}
 
 				}
@@ -116,26 +127,15 @@ bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTr
 			}
 			else if (train == 'M')
 			{
-				tilenumber = getValidTile();
-				Tile nextmove = GetPlayerTiles().at(tilenumber - 1);
-				
-				//moving a user chosen tile to a Computer train
-				if (CheckTrainMove(mexicanTrain, nextmove, tilenumber))
-				{
-					//this gives one extra chance in condition of OrphanDouble
-					if (nextmove.GetSide1() == nextmove.GetSide2()) {
-						cout << "You get one more chance to play" << endl;
-						replay = true;
-					}
 
-					validtile = true;
+				if (continuedmove == 1) {
 
+					CheckandPlace(trainslist, **(trainslist + 2), replay, validtile, "Mexican");
 				}
-				else
-				{
-					cout << "The tile you chose cannot be placed on the Mexican train" << endl;
-
-				}
+				else {
+					PlaceTiletoTrain(**(trainslist + 2), replay, validtile, "Mexican");
+				}	
+		
 			}
 			else {
 				cout << "Sorry the tile you gave cannot be played on the chosen Train! Pick Boneyard tiles if no moves are valid." << endl;
@@ -143,5 +143,11 @@ bool Computer::PlayMove(Train& userTrain, Train& computerTrain, Train& mexicanTr
 
 		}
 	}
-	return replay;
+	return replay;*/
 }
+
+void Computer::BoneyardtoTrain(Train* trainslist[], bool& replay, bool& validtile)
+{
+}
+
+
