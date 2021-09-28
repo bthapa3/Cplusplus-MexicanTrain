@@ -1,1 +1,5 @@
-﻿  MexicanTrain.vcxproj -> C:\Users\tbish\source\repos\MexicanTrain\x64\Debug\MexicanTrain.exe
+﻿  Round.cpp
+C:\Users\tbish\source\repos\MexicanTrain\MexicanTrain\Train.h(59,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\tbish\source\repos\MexicanTrain\MexicanTrain\Round.cpp(71,5): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\tbish\source\repos\MexicanTrain\MexicanTrain\Round.cpp(258,5): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  MexicanTrain.vcxproj -> C:\Users\tbish\source\repos\MexicanTrain\x64\Debug\MexicanTrain.exe

@@ -1,3 +1,12 @@
+/*
+************************************************************
+* Name:  Bishal Thapa									   *
+* Project:  Project 1 Mexican Train C++				       *
+* Class:  CMPS366 OPL				                       *
+* Date:  09/27/2020				                           *
+************************************************************
+*/
+
 #pragma once
 #include "Player.h"
 #include "Tile.h"
@@ -6,14 +15,13 @@
 #include "Computer.h"
 #include "Train.h"
 #include <iomanip>
+#include <fstream>
 class Round
 {	
 	public:
 		Round() {
 			currentRound = 0;
 			engineTile = Tile();
-			usertrainmarked = false;
-			computertrainmarked = false;
 			gameover = false;
 			playerscore = 0;
 			computerscore = 0;
@@ -21,8 +29,6 @@ class Round
 		};
 		Round(int round) {
 			currentRound = round;
-			usertrainmarked = false;
-			computertrainmarked = false;
 			gameover = false;
 			playerscore = 0;
 			computerscore = 0;
@@ -30,7 +36,7 @@ class Round
 		~Round() {};
 		void Initializegame();
 		void DisplayGame();
-		void PlayMoves(bool userfirst);
+		bool PlayMoves(bool userfirst, int round, int userscore, int computerscore);
 		bool Playpossible();
 		inline int playerRoundscore() {
 			return playerscore;
@@ -49,23 +55,34 @@ class Round
 
 		void DisplayallTiles(vector<Tile> tiles);
 
+		void SerializeandQuit(int userscore, int computerscore,string nextplayer);
+
+		void InitializefromFile(vector<Tile> userTrain, vector<Tile> computerTrain, vector<Tile> mexicanTrain, bool usertrainmarked,
+		bool computertrainmarked, vector<Tile> boneyard, vector<Tile> userTiles, vector <Tile> computerTiles);
+
+
 	private:
 		int currentRound;
 		vector <Tile> boneyardTiles;
 		
+		//this is the engine tile
 		Tile engineTile;
 
+		//this is the boneyard tile
 		vector<Tile> BoneyardTiles;
+
+		//three trains for the user. mexican and the computer
 		Train * trainsList[3];
-		//Train* computerTrain;
-		//Train* mexicanTrain;
-		//Train* playerTrain;
+		
+		//User player and the computer player
 		Player * playersList[2];
-		bool usertrainmarked;
-		bool computertrainmarked;
+
+		
 		bool gameover;
 		int playerscore;
 		int computerscore;
+		int totalcomputer;
+		int totalplayer;
 
 };
 

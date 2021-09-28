@@ -1,3 +1,13 @@
+/*
+************************************************************
+* Name:  Bishal Thapa									   *
+* Project:  Project 1 Mexican Train C++				       *
+* Class:  CMPS366 OPL				                       *
+* Date:  09/27/2020				                           *
+************************************************************
+*/
+
+
 #include "Round.h"
 //Initializing the deck
 void Round::Initializegame() {
@@ -20,46 +30,81 @@ void Round::Initializegame() {
     //Getting the boneyard tiles.
     boneyardTiles = mydeck.GetBoneyardTiles();
      
-    //pushing engine tile to the player train,computer train and mexican as they start from there.
-    //playerTrain=  new Train("playertrain");
-    //playerTrain->Addtile(engineTile);
-
+    //user train object
     trainsList[0] = new Train("usertrain");
     trainsList[0]->Addtile(engineTile);
-    //playerTrain = trainsList[0];
-
-    //computerTrain=new Train("computertrain");
-    //computerTrain->Addtile(engineTile);
-
-
+   
+    //computer train object
     trainsList[1] = new Train("computertrain");
-    cout <<"train type is:"<< trainsList[1]->trainType();
     trainsList[1]->Addtile(engineTile);
-    //computerTrain = trainsList[1];
-
-
-    //mexicanTrain = new Train("mexicantrain");
-    //mexicanTrain->Addtile(engineTile);
-
+  
+    //mexican train object.
     trainsList[2] = new Train("mexicantrain");
     trainsList[2]->Addtile(engineTile);
-    //mexicanTrain = trainsList[2];
 
+}
+void Round::InitializefromFile(vector<Tile> userTrain, vector<Tile> computerTrain,
+    vector<Tile> mexicanTrain, bool a_usertrainmarked, bool a_computertrainmarked, vector<Tile> boneyard, vector<Tile> userTiles, vector <Tile> computerTiles) {
+    
+  
+    //Get the engine Tile as the first element of the user train.
+    engineTile = userTrain.at(0);
+    
+    //Computer Player for the game
+    playersList[0] = new Computer(computerTiles);
+
+    //User player initialized with the random 16 tiles being assigned.
+    playersList[1] = new User(userTiles);
+
+
+    //Getting the boneyard tiles.
+    boneyardTiles = boneyard;
+
+    //user train object
+    trainsList[0] = new Train("usertrain");
+    for (int i = 0; i < userTrain.size(); i++) {
+        trainsList[0]->Addtile(userTrain[i]);
+    }
+
+    //computer train object
+    trainsList[1] = new Train("computertrain");
+    for (int i =computerTrain.size()-1 ; i >=0; i--) {
+        trainsList[1]->Addtile(computerTrain[i]);
+    }
+
+    //mexican train object.
+    trainsList[2] = new Train("mexicantrain");
+
+    //as mexican train doesnot have engine tile added.
+    trainsList[2]->Addtile(engineTile);
+    for (int i = 0; i < mexicanTrain.size(); i++) {
+        trainsList[2]->Addtile(mexicanTrain[i]);
+    }
+
+    if (a_usertrainmarked) {
+        trainsList[0]->MarkTrain();
+    }
+    if (a_computertrainmarked) {
+        trainsList[1]->MarkTrain();
+    }
 }
 
 //displays the trains and tiles on the screen.
 void Round::DisplayGame()
 {
-    
-    //------------------------------------------------------------------------------Displays Players remaing tiles---------------------------------------------------------
-    cout << " Player Tiles:" << endl;
+
+    cout << "Current Round is : " << currentRound << endl;
+    cout << "Human score before this round: " << totalplayer << "  Computer score before this round: " << totalcomputer << endl;
+    cout << "____________________________________________________________________________________________" << endl;
+//------------------------------------------------------------------------------Displays Players remaing tiles---------------------------------------------------------
+    cout << " Human Player Tiles:" << endl;
     DisplayallTiles(playersList[1]->GetPlayerTiles());
     cout << endl;
 
 //---------------------------------------displays the user player train-------------------------------------------------------------------------------------------
     
     int defaultspacing = 80;
-    cout << setw(defaultspacing) << "Marker: " << trainsList[0]->marked() << endl;
+    cout << setw(defaultspacing) <<"user train-->" << endl;
     //FIRST LINE
     DisplayPlayerDouble(defaultspacing);
 
@@ -92,7 +137,7 @@ void Round::DisplayGame()
 
     //third line for computer train
     DisplayComputerdouble(computerspacing);
-    cout << setw(defaultspacing) << "Marker: " << trainsList[1]->marked() << endl;
+    cout << setw(defaultspacing) << "<- computer train " << endl;
 
    //---------------------------------------------------------------Displays  computer players remaining tiles-------------------------------------------------------------
 
@@ -105,9 +150,14 @@ void Round::DisplayGame()
     
     
     cout << "------------------------------------------------------------------------------------------------------------"<< endl;
-    cout << " Boneyard Tiles:" << endl;
-    DisplayallTiles(boneyardTiles);
-
+    cout << " Next Boneyard Tile:->" ;
+    //yDisplayalltiles if needed to display all boneyard tiles
+    //DisplayallTiles(boneyardTiles);
+    if (boneyardTiles.size() == 0) { cout << "Empty"; }
+    else {
+        cout << boneyardTiles.at(0).GetSide1() << "-" << boneyardTiles.at(0).GetSide2() << endl;
+    }
+    cout << "--------------------------------------------------------------------------------------------------------" << endl;
   
 }
 
@@ -130,6 +180,7 @@ void Round::DisplayComputerdouble(int spacing) {
 
 void Round::DisplayComputerMiddleTile(int spacing) {
     cout << setw(spacing);
+    if (trainsList[1]->isTrainMarked()) { cout << "(M)"; }
     for (int i = trainsList[1]->Size() - 1; i > 0; i--) {
         Tile currenttile = trainsList[1]->GetAllTiles().at(i);
         if (currenttile.GetSide1() == currenttile.GetSide2()) {
@@ -177,6 +228,71 @@ void Round::DisplayallTiles(vector<Tile> tiles)
     cout << endl;
 }
 
+void Round::SerializeandQuit(int userscore, int computerscore, string nextplayer)
+{
+    string filename;
+    //this prevents against empty filename and at least 2 chars expected
+    while (filename.length() < 6) {
+        filename = "";
+        cout << "Enter the file name you want to save into (without .txt)" << endl;
+        cin >> filename;
+        filename = filename + ".txt";
+    }
+   
+    
+    ofstream MyFile(filename);
+
+    // Write to the file
+    MyFile << "Round: " <<currentRound;
+    //for the computer
+    MyFile << "\n\n";
+    MyFile << "Computer:\n";
+    MyFile << "   Score: " << computerscore << endl;
+    MyFile << "   Hand: ";
+    for (int i = 0; i < playersList[0]->GetPlayerTiles().size();i++) {
+        MyFile << to_string(playersList[0]->GetPlayerTiles().at(i).GetSide1()) << "-" << to_string(playersList[0]->GetPlayerTiles().at(i).GetSide2()) << " ";
+    }
+    MyFile << "\n";
+    MyFile << "   Train: ";
+    if (trainsList[1]->isTrainMarked()) MyFile << "M ";
+    for (int i = trainsList[1]->GetAllTiles().size() - 1; i >= 0; i--) {
+        MyFile << to_string(trainsList[1]->GetAllTiles().at(i).GetSide2()) << "-" << to_string(trainsList[1]->GetAllTiles().at(i).GetSide1()) << " ";
+    }
+    //for the user 
+    MyFile << "\n";
+    MyFile << "Human:\n";
+    MyFile << "   Score: " << userscore << endl;
+    MyFile << "   Hand: ";
+    for (int i = 0; i < playersList[1]->GetPlayerTiles().size(); i++) {
+        MyFile << to_string(playersList[1]->GetPlayerTiles().at(i).GetSide1()) << "-" << to_string(playersList[1]->GetPlayerTiles().at(i).GetSide2()) << " ";
+    }
+    MyFile << "\n";
+    MyFile << "   Train: ";
+    for (int i = 0; i< trainsList[0]->GetAllTiles().size() ; i ++) {
+        MyFile << to_string(trainsList[0]->GetAllTiles().at(i).GetSide1()) << "-" << to_string(trainsList[0]->GetAllTiles().at(i).GetSide2()) << " ";
+    }
+    if (trainsList[0]->isTrainMarked()) MyFile << "M";
+    MyFile << "\n\n";
+    MyFile << "Mexican Train: ";
+    for (int i = 1; i < trainsList[2]->GetAllTiles().size(); i++) {
+        MyFile << to_string(trainsList[2]->GetAllTiles().at(i).GetSide1()) << "-" << to_string(trainsList[2]->GetAllTiles().at(i).GetSide2()) << " ";
+    }
+    MyFile << "\n\n";
+    MyFile << "Boneyard: ";
+    for (int i = 0; i <boneyardTiles.size(); i++) {
+        MyFile << to_string(boneyardTiles.at(i).GetSide1()) << "-" << to_string(boneyardTiles.at(i).GetSide2()) << " ";
+    }
+    MyFile << "\n\n";
+    MyFile << "Next Player: " << nextplayer;
+
+    // Close the file
+    MyFile.close();
+    cout << "Your file has been serialized" << endl;
+    cout<<"-----------------------------------------------------------------------" << endl;
+
+    return;
+}
+
 void Round::DisplayPlayerMiddleTile(int spacing) {
     cout << setw(spacing);
 
@@ -192,6 +308,7 @@ void Round::DisplayPlayerMiddleTile(int spacing) {
         }
 
     }
+    if (trainsList[0]->isTrainMarked()) { cout << "(M)"; }
     cout << endl;
 };
 
@@ -233,13 +350,13 @@ void Round::DisplayMexicanMiddleTile(int spacing) {
     cout << endl;
 };
 
-void Round::PlayMoves(bool playerfirst)
+bool Round::PlayMoves(bool playerfirst, int round, int a_totaluserscore, int a_totalcomputerscore)
 {
     
-    //bug: when a opponent player plays on a marked train marked is removed
-    // two double tiles can only be played if The player can play an additional third non-double tile from the player's hand
-    //display a game tiles before the move is made by either a computer or an user.
-
+    
+    totalcomputer = a_totalcomputerscore;
+    totalplayer = a_totaluserscore;
+    bool quit = false;
     DisplayGame();
     //this helps to run the player first or computer first sequence
     if (playerfirst) {
@@ -248,13 +365,16 @@ void Round::PlayMoves(bool playerfirst)
         int continousplay = 0;
        
         do
-        {
-            
+        { 
             //this will help the user to replay a turn in case of the orphan double
-            replay = playersList[1]->Mainmove(trainsList, boneyardTiles, continousplay);
+            replay = playersList[1]->PlayMove(trainsList, boneyardTiles, continousplay,quit);
             system("CLS");
             DisplayGame();
             continousplay++;
+            if (quit) {
+                SerializeandQuit(a_totaluserscore, a_totalcomputerscore, "Human");
+                return false;
+            }
            
         } while (replay);
     }
@@ -270,10 +390,15 @@ void Round::PlayMoves(bool playerfirst)
 
         do
         {   //this will help the user to replay a turn in case of the orphan double
-            replay= playersList[0]->Mainmove(trainsList, boneyardTiles,continousplay);
+            replay= playersList[0]->PlayMove(trainsList, boneyardTiles,continousplay,quit);
             system("CLS");
             DisplayGame();
             continousplay++;
+            if (quit)
+            {
+                SerializeandQuit(a_totaluserscore, a_totalcomputerscore, "Computer");
+                return false;
+            }
             
         }while (replay);
 
@@ -285,10 +410,14 @@ void Round::PlayMoves(bool playerfirst)
             do
             {
                 //this will help the user to replay a turn in case of the orphan double
-                replay = playersList[1]->Mainmove(trainsList, boneyardTiles, continousplay);
+                replay = playersList[1]->PlayMove(trainsList, boneyardTiles, continousplay,quit);
                 system("CLS");
                 DisplayGame();
                 continousplay++;
+                if (quit) {
+                    SerializeandQuit(a_totaluserscore, a_totalcomputerscore, "Human");
+                    return false;
+                }
               
             } while (replay);
         
@@ -303,14 +432,18 @@ void Round::PlayMoves(bool playerfirst)
        
         playerscore = playerscore+  it.GetSide1() + it.GetSide2();
         
-    }
-    for (auto& it : playersList[0]->GetPlayerTiles()) {
-
-        computerscore = computerscore+ it.GetSide1() + it.GetSide2();
         
     }
+    cout << "Human Player's score for the round:" << playerscore << endl;
+    for (auto& it : playersList[0]->GetPlayerTiles()) {
+
+        computerscore = computerscore + it.GetSide1() + it.GetSide2();
+      
+        
+    }
+    cout << "Computer Player's score for the round:" << computerscore << endl;
     
- 
+    return true;
       
 }
 
