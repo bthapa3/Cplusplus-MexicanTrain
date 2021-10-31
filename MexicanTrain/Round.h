@@ -20,69 +20,69 @@ class Round
 {	
 	public:
 		Round() {
-			currentRound = 0;
-			engineTile = Tile();
-			gameover = false;
-			playerscore = 0;
-			computerscore = 0;
+			m_currentRound = 0;
+			m_engineTile = Tile();
+			m_gameover = false;
+			m_playerscore = 0;
+			m_computerscore = 0;
 
 		};
-		Round(int round) {
-			currentRound = round;
-			gameover = false;
-			playerscore = 0;
-			computerscore = 0;
+		Round(int a_round) {
+			m_currentRound = a_round;
+			m_gameover = false;
+			m_playerscore = 0;
+			m_computerscore = 0;
 		}
-		~Round() {};
+		~Round() {	};
 		void Initializegame();
 		void DisplayGame();
 		bool PlayMoves(bool userfirst, int round, int userscore, int computerscore);
 		bool Playpossible();
 		inline int playerRoundscore() {
-			return playerscore;
+			return m_playerscore;
 		}
 		inline int computerRoundscore() {
-			return computerscore;
+			return m_computerscore;
 		}
-		void DisplayComputerdouble(int spacing);
+		void DisplayComputerdouble(int a_spacing);
 
-		void DisplayComputerMiddleTile(int spacing);
-		void DisplayPlayerMiddleTile(int spacing);
-		void DisplayPlayerDouble(int spacing);
+		void DisplayComputerMiddleTile(int a_spacing);
+		void DisplayPlayerMiddleTile(int a_spacing);
+		void DisplayPlayerDouble(int a_spacing);
 
-		void DisplayMexicanMiddleTile(int spacing);
-		void DisplayMexicanDouble(int spacing);
+		void DisplayMexicanMiddleTile(int a_spacing);
+		void DisplayMexicanDouble(int a_spacing);
 
-		void DisplayallTiles(vector<Tile> tiles);
+		void DisplayallTiles(vector<Tile> a_tiles);
 
-		void SerializeandQuit(int userscore, int computerscore,string nextplayer);
+		void SerializeandQuit(int a_userscore, int a_computerscore,string a_nextplayer);
 
-		void InitializefromFile(vector<Tile> userTrain, vector<Tile> computerTrain, vector<Tile> mexicanTrain, bool usertrainmarked,
-		bool computertrainmarked, vector<Tile> boneyard, vector<Tile> userTiles, vector <Tile> computerTiles);
+		void InitializefromFile(vector<Tile> a_userTrain, vector<Tile> a_computerTrain, vector<Tile> a_mexicanTrain, bool a_usertrainmarked,
+		bool a_computertrainmarked, vector<Tile> a_boneyard, vector<Tile> a_userTiles, vector <Tile> a_computerTiles);
 
 
 	private:
-		int currentRound;
-		vector <Tile> boneyardTiles;
+		int m_currentRound;
+		vector <Tile> m_boneyardTiles;
 		
 		//this is the engine tile
-		Tile engineTile;
+		Tile m_engineTile;
 
 		//this is the boneyard tile
-		vector<Tile> BoneyardTiles;
+		vector<Tile> m_BoneyardTiles;
 
 		//three trains for the user. mexican and the computer
-		Train * trainsList[3];
+		Train * m_trainsList[3];
 		
 		//User player and the computer player
-		Player * playersList[2];
+		Player * m_playersList[2];
 
 		
-		bool gameover;
-		int playerscore;
-		int computerscore;
-		int totalcomputer;
-		int totalplayer;
+		bool m_gameover;
+		int m_playerscore;
+		int m_computerscore;
+		int m_totalcomputer;
+		int m_totalplayer;
 
 };
 

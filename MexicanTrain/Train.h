@@ -20,52 +20,46 @@ class Train
 
 		Train() {
 		}
-		Train( string train ) 
+		Train( string a_train ) 
 		{
-			typeoftrain = train;
-			trainmarked = false;
-			orphandoubled = false;
+			m_typeoftrain = a_train;
+			m_trainmarked = false;
 		}
 		~Train() {};
-		void Addtile(Tile tiletobeadded);
+		void Addtile(Tile a_tiletobeadded);
 
-		void RemoveTile(int position);
 
 		//returns all the tiles of the train
 		inline vector<Tile> GetAllTiles() {
 
-			return traintiles;
+			return m_traintiles;
 		};
 
 		inline bool isTrainMarked() {
-			return trainmarked;
+			return m_trainmarked;
 		};
 
-		inline string marked() {
-			if (trainmarked) return "ON";
-			else return "OFF";
-		}
 
 		inline Tile GetTop() {
-			return traintiles.back();
+			return m_traintiles.back();
 		}
 		inline void MarkTrain() {
-			trainmarked = true;
+			m_trainmarked = true;
 		}
 		inline void RemoveMark() {
-			trainmarked = false;
+			m_trainmarked = false;
 		}
 		inline int Size() {
-			return traintiles.size();
+			return m_traintiles.size();
 		}
 		inline string trainType() {
-			return typeoftrain;
+			return m_typeoftrain;
 		}
 
 	private:
-		vector<Tile> traintiles;
-		string typeoftrain;
-		bool trainmarked;
-		bool orphandoubled;
+		vector<Tile> m_traintiles;
+		string m_typeoftrain;
+		bool m_trainmarked;
+		
 };
 

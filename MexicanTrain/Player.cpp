@@ -9,113 +9,228 @@
 
 
 #include "Player.h"
-bool Player::PlayMove(Train* trainslist[], vector<Tile>& boneyard, int continuedmove, bool& quit)
+
+/* *********************************************************************
+Function Name:	PlayMove
+
+Purpose:		This is a virutal function so it doesnot do anything.	
+
+Parameters:
+				a_trainslist[] --> pointer to the pointers array of train object
+				a_boneyard --> vector of boneyard tiles passed by reference.
+				a_continuedmove --> integer value which denotes how many times same player has played continously.
+				a_quit --> boolean value that represents if the user wants to save the game and quit.
+
+Return Value:
+				boolean value that represents if the user gets to make a move again.
+
+Algorithm:
+				none
+
+Assistance Received: none
+********************************************************************* */
+
+bool Player::PlayMove(Train* a_trainslist[], vector<Tile>& a_boneyard, int a_continuedmove, bool& a_quit)
 {
 	//This move is made for both players
 	//this function doesnot do anything and is a virtual function.
 	return false;
 }
 
-bool Player::CheckTrainMove(Train & Train, Tile tile, int tilenumber )
+
+/* *********************************************************************
+Function Name:	CheckTrainMove
+
+Purpose:		Tries to move a given tile to a given train and returns boolean if succesful.
+
+Parameters:
+				1) a_Train --> Train where the tile is to be moved passed with reference.
+				2) a_tile --> Tile to be moved to the train
+				3) a_tilenumber --> integer value that denotes the position of tile in the tile list.
+
+Return Value:
+				boolean value that represents if the tile was moves succesfully.
+
+Algorithm:
+				check if the one of the tile side has same number as a train. If so move the tile
+				and return true value.
+
+Assistance Received: none
+********************************************************************* */
+bool Player::CheckTrainMove(Train & a_Train, Tile a_tile, int a_tilenumber )
 {
 	//moving a user chosen tile to a Player train
-	if (tile.GetSide1() == Train.GetAllTiles().back().GetSide2() || tile.GetSide2() == Train.GetAllTiles().back().GetSide2())
+	if (a_tile.GetSide1() == a_Train.GetAllTiles().back().GetSide2() || a_tile.GetSide2() == a_Train.GetAllTiles().back().GetSide2())
 	{
 
 		//if this is a double tile next tile is flipped accordingly
-		if (Train.GetAllTiles().back().GetSide1() == Train.GetAllTiles().back().GetSide2()  && 
-			(tile.GetSide1() != Train.GetAllTiles().back().GetSide2())) 
+		if (a_Train.GetAllTiles().back().GetSide1() == a_Train.GetAllTiles().back().GetSide2()  && 
+			(a_tile.GetSide1() != a_Train.GetAllTiles().back().GetSide2())) 
 		{
-			tile.Filpside();
+			a_tile.Filpside();
 		}
 		//two consecutive tiles are flipped in order to set matching number to each other.
-		else if ((Train.GetAllTiles().back().GetSide1() != Train.GetAllTiles().back().GetSide2()) && 
-			tile.GetSide1() == Train.GetAllTiles().back().GetSide1() || tile.GetSide2() == Train.GetAllTiles().back().GetSide2()) 
+		else if ((a_Train.GetAllTiles().back().GetSide1() != a_Train.GetAllTiles().back().GetSide2()) && 
+			a_tile.GetSide1() == a_Train.GetAllTiles().back().GetSide1() || a_tile.GetSide2() == a_Train.GetAllTiles().back().GetSide2()) 
 		{
-			tile.Filpside();
+			a_tile.Filpside();
 		}
 		//adds tile to the Train
-		Train.Addtile(tile);
+		a_Train.Addtile(a_tile);
 		//removes tile from the user or computer's tile pile.
-		RemoveTile(tilenumber - 1);
+		RemoveTile(a_tilenumber - 1);
 		return true;
 	}
 	else
 	{
 		return false;
-
 	}	
 }
 
-void Player::RemoveTile(int position)
+
+/* *********************************************************************
+Function Name:	RemoveTile
+
+Purpose:		Remove a player tile at given position.
+
+Parameters:
+				1) a_position --> position of the tile in the player's tile list.
+
+Return Value:
+				none
+
+Algorithm:
+				check for tile and remove if found.
+
+Assistance Received: none
+********************************************************************* */
+void Player::RemoveTile(int a_position)
 {
 	//this makes sure random position doesnot break the code.
-	if (position > tileslist.size()) {
+	if (a_position > m_tileslist.size()) {
 		return;
 	}
-	tileslist.erase(tileslist.begin() + position);
+	m_tileslist.erase(m_tileslist.begin() + a_position);
 }
 
 
+/* *********************************************************************
+Function Name:	OrphanDoublePresent
 
-bool Player::OrphanDoublePresent(Train * trainslist[], char & train)
+Purpose:		Check if the orphan double train is present 
+
+Parameters:
+				1) a_trainslist --> pointer to the pointers array of train object
+				2) a_train --> character value which stores the type of train if the orphan double train is found.
+
+Return Value:
+				boolean value that represents if there was an orphan double train.
+
+Algorithm:
+				check if a double tile is present at the end of the train.
+				
+
+
+Assistance Received: none
+********************************************************************* */
+bool Player::OrphanDoublePresent(Train * a_trainslist[], char & a_train)
 {
 	
-	if ( (**(trainslist)).GetAllTiles().size()>1 && (**(trainslist)).GetTop().GetSide1() == (**(trainslist)).GetTop().GetSide2()) {
-		train= 'U';
+	if ( (**(a_trainslist)).GetAllTiles().size()>1 && (**(a_trainslist)).GetTop().GetSide1() == (**(a_trainslist)).GetTop().GetSide2()) {
+		a_train= 'U';
 		return true;
 	}
-	else if ((**(trainslist+1)).GetAllTiles().size()>1 && (**(trainslist+1)).GetTop().GetSide1() == (**(trainslist+1)).GetTop().GetSide2()) {
-		train= 'C';
+	else if ((**(a_trainslist+1)).GetAllTiles().size()>1 && (**(a_trainslist+1)).GetTop().GetSide1() == (**(a_trainslist+1)).GetTop().GetSide2()) {
+		a_train= 'C';
 		return true;
 	}
-	else if ((**(trainslist+2)).GetAllTiles().size()>1 && (**(trainslist+2)).GetTop().GetSide1() == (**(trainslist+2)).GetTop().GetSide2()) {
-		train= 'M';
+	else if ((**(a_trainslist+2)).GetAllTiles().size()>1 && (**(a_trainslist+2)).GetTop().GetSide1() == (**(a_trainslist+2)).GetTop().GetSide2()) {
+		a_train= 'M';
 		return true;
 	}
 	return false;
 }
 
+/* *********************************************************************
+Function Name:	PickBoneyard
 
-bool Player::PickBoneyard(vector<Tile> &boneyard, Train & train)
+Purpose:		Pick a tile from boneyard and move to player tiles list if present.
+
+Parameters:
+				1) a_boneyard --> vector of boneyard tiles list passed by reference.
+				2) a_train --> train where the boneyard tile is to be passed.
+
+Return Value:
+				boolean value representing if a boneyard tile was passed succesfully.
+
+Algorithm:
+				if size of boneyard tiles is more than 0, pass boneyard tile to player's tiles 
+				list. Else mark the train and do nothing.
+
+
+Assistance Received: none
+********************************************************************* */
+bool Player::PickBoneyard(vector<Tile> & a_boneyard, Train & a_train)
 {
 	
 	//if there is more tiles left
-	if (boneyard.size() != 0) {
-		Tile boneyardfront = boneyard.front();
-		boneyard.erase(boneyard.begin());
+	if (a_boneyard.size() != 0) {
+		Tile boneyardfront = a_boneyard.front();
+		a_boneyard.erase(a_boneyard.begin());
 		AddtoBack(boneyardfront);
-		train.MarkTrain();
+		a_train.MarkTrain();
 		return true;
 	}
 	// if no tiles left simply mark  the train and pass the turn
 	else {
-		train.MarkTrain();
+		a_train.MarkTrain();
 		return false;
 	}
 	
 }
 
 
-bool Player::ValidsecondDouble(Train* trainslist[], Train chosentrain, Tile newtile)
+/* *********************************************************************
+Function Name:	ValidsecondDouble
+
+Purpose:		Only allow a player to play a second double tile if player has
+				a valid single tile to play after second double.
+
+Parameters:
+				1)	a_trainslist -->pointer to the pointers array of train object
+				2) a_chosentrain --> train where the player is trying to play second double train.
+				3) a_newtile -->double tile which the player is trying to play
+
+Return Value:
+				boolean value that represents if the user should be allowes to play a second double tile.
+
+Algorithm:
+				Modify the top of the train tile as a double tile user choose to play. If remaining player's tiles
+				have a tile that can play with one of the trains, tile is a valid second double.
+
+
+Assistance Received: none
+********************************************************************* */
+
+bool Player::ValidsecondDouble(Train* a_trainslist[], Train a_chosentrain, Tile a_newtile)
 {
 	Tile usertrainTop, computertrainTop, mexicantrainTop;
-	if (chosentrain.trainType() == "usertrain") {
+	if (a_chosentrain.trainType() == "usertrain") {
 
-		usertrainTop = newtile;
-		computertrainTop = (**(trainslist + 1)).GetTop();
-		mexicantrainTop = (**(trainslist + 2)).GetTop();
+		usertrainTop = a_newtile;
+		computertrainTop = (**(a_trainslist + 1)).GetTop();
+		mexicantrainTop = (**(a_trainslist + 2)).GetTop();
 	}
-	else if (chosentrain.trainType() == "computertrain") {
+	else if (a_chosentrain.trainType() == "computertrain") {
 
-		usertrainTop = (**trainslist).GetTop();
-		computertrainTop = newtile;
-		mexicantrainTop = (**(trainslist + 2)).GetTop();
+		usertrainTop = (**a_trainslist).GetTop();
+		computertrainTop = a_newtile;
+		mexicantrainTop = (**(a_trainslist + 2)).GetTop();
 	}
 	else {
-		usertrainTop = (**trainslist).GetTop();
-		computertrainTop = (**(trainslist + 1)).GetTop();
-		mexicantrainTop = newtile;
+		usertrainTop = (**a_trainslist).GetTop();
+		computertrainTop = (**(a_trainslist + 1)).GetTop();
+		mexicantrainTop = a_newtile;
 	}
 
 	//checking players have a valid single tile to play after second double.
@@ -124,7 +239,7 @@ bool Player::ValidsecondDouble(Train* trainslist[], Train chosentrain, Tile newt
 			return true;
 		}
 	}
-	if ((**(trainslist + 1)).isTrainMarked()) {
+	if ((**(a_trainslist + 1)).isTrainMarked()) {
 		for (auto& it : GetPlayerTiles()) {
 			if ((it.GetSide1() == computertrainTop.GetSide2() || it.GetSide2() == computertrainTop.GetSide2()) && it.GetSide1() != it.GetSide2()) {
 				return true;
@@ -142,18 +257,50 @@ bool Player::ValidsecondDouble(Train* trainslist[], Train chosentrain, Tile newt
 
 }
 
-void Player::BoneyardtoTrain(Train* trainslist[], bool& replay, bool& validtile)
+/* *********************************************************************
+Function Name:	BoneyardtoTrain
+
+Purpose:		Virtual function that does nothing
+
+Parameters:
+				1)	a_trainslist -->pointer to the pointers array of train object
+				2) a_replay --> boolean value that denotes if the user can play a move again continously
+				3) a_validtile --> boolean value that represents if the player made a move needed for the turn
+
+Return Value:
+				none
+
+Algorithm:
+				none
+
+Assistance Received: none
+********************************************************************* */
+void Player::BoneyardtoTrain(Train* a_trainslist[], bool& a_replay, bool& a_validtile)
 {	
 	//this is a virtual function that has no work for player class.
 			
 }
 
+/* *********************************************************************
+Function Name:	CanPlayinTrain
 
+Purpose:		Checks if a player has any tile that can be played on the specified train.
 
+Parameters:
+				1)	a_train --> train where the tile is to be placed.
 
-bool Player::CanPlayinTrain(Train train) {
+Return Value:
+				boolean value based on if there is a tile to play
 
-	Tile toptile = train.GetTop();
+Algorithm:
+				check all tiles to match the end of the given train.
+
+Assistance Received: none
+********************************************************************* */
+bool Player::CanPlayinTrain(Train a_train) {
+
+	//tile where a new tile is attached to the train.
+	Tile toptile = a_train.GetTop();
 
 	for (int i = 0; i < GetPlayerTiles().size(); i++) {
 		if (GetPlayerTiles().at(i).GetSide1() == toptile.GetSide2() || GetPlayerTiles().at(i).GetSide2() == toptile.GetSide2()) {
@@ -166,9 +313,26 @@ bool Player::CanPlayinTrain(Train train) {
 
 
 
-bool Player::CanPlayDouble(Train train)
+/* *********************************************************************
+Function Name:	CanPlayDouble
+
+Purpose:		Checks if a player has any double tile that can be played on the specified train.
+
+Parameters:
+				1)	a_train --> train where the double tile is to be placed.
+
+Return Value:
+				boolean value based on if there is a double tile to play
+
+Algorithm:
+				check all double tiles to match the end of the given train.
+
+Assistance Received: none
+********************************************************************* */
+bool Player::CanPlayDouble(Train a_train)
 {
-	Tile toptile = train.GetTop();
+	//tile where a new tile is attached to the train.
+	Tile toptile = a_train.GetTop();
 	for (int i = 0; i < GetPlayerTiles().size(); i++) {
 		if ((GetPlayerTiles().at(i).GetSide1() == toptile.GetSide2() || GetPlayerTiles().at(i).GetSide2() == toptile.GetSide2())
 		&& (GetPlayerTiles().at(i).GetSide1()== GetPlayerTiles().at(i).GetSide2())) {
@@ -179,9 +343,26 @@ bool Player::CanPlayDouble(Train train)
 	return false;
 }
 
-bool Player::CanPlayNonDouble(Train train)
+/* *********************************************************************
+Function Name:	CanPlayNonDouble
+
+Purpose:		Checks if a player has any nondouble tile that can be played on the specified train.
+
+Parameters:
+				1)	a_train --> train where the nondouble tile is to be placed.
+
+Return Value:
+				boolean value based on if there is a nondouble tile to play
+
+Algorithm:
+				check all nondouble tiles to match the end of the given train.
+
+Assistance Received: none
+********************************************************************* */
+bool Player::CanPlayNonDouble(Train a_train)
 {
-	Tile toptile = train.GetTop();
+	//tile where a new tile is attached to the train.
+	Tile toptile = a_train.GetTop();
 	for (int i = 0; i < GetPlayerTiles().size(); i++) {
 		if ((GetPlayerTiles().at(i).GetSide1() == toptile.GetSide2() || GetPlayerTiles().at(i).GetSide2() == toptile.GetSide2())
 			&& (GetPlayerTiles().at(i).GetSide1() != GetPlayerTiles().at(i).GetSide2())) {
@@ -192,9 +373,26 @@ bool Player::CanPlayNonDouble(Train train)
 	return false;
 }
 
-int Player::GetPlayableTile(Train train)
+/* *********************************************************************
+Function Name:	GetPlayableTile
+
+Purpose:		return the tile number of the tile that can be played on the given train.
+
+Parameters:
+				1)	a_train --> train where the tile is to be placed.
+
+Return Value:
+				int value which is the tile number that can be played.
+
+Algorithm:
+				check all tiles to match the end of the given train and return tilenumber.
+
+Assistance Received: none
+********************************************************************* */
+int Player::GetPlayableTile(Train a_train)
 {
-	Tile toptile = train.GetTop();
+	//tile where a new tile is attached to the train.
+	Tile toptile = a_train.GetTop();
 	int tile_return = -1;
 	for (int i = 0; i < GetPlayerTiles().size(); i++) {
 		if (GetPlayerTiles().at(i).GetSide1() == toptile.GetSide2() || GetPlayerTiles().at(i).GetSide2() == toptile.GetSide2()) {
@@ -214,9 +412,24 @@ int Player::GetPlayableTile(Train train)
 	return tile_return+1;
 }
 
-int Player::GetPlayableDouble(Train train)
+/* *********************************************************************
+Function Name:	GetPlayableDouble
+
+Purpose:		return the tile number of the doubletile that can be played on the given train.
+
+Parameters:
+				1)	a_train --> train where the double tile is to be placed.
+Return Value:
+				int value which is the double-tile number that can be played.
+Algorithm:
+				check all double tiles to match the end of the given train and return tilenumber.
+
+Assistance Received: none
+********************************************************************* */
+int Player::GetPlayableDouble(Train a_train)
 {
-	Tile toptile = train.GetTop();
+	//tile where a new tile is attached to the train.
+	Tile toptile = a_train.GetTop();
 	for (int i = 0; i < GetPlayerTiles().size(); i++) {
 		if ((GetPlayerTiles().at(i).GetSide1() == toptile.GetSide2() || GetPlayerTiles().at(i).GetSide2() == toptile.GetSide2())
 		&& (GetPlayerTiles().at(i).GetSide1() == GetPlayerTiles().at(i).GetSide2())) {
@@ -227,15 +440,29 @@ int Player::GetPlayableDouble(Train train)
 }
 
 
+/* *********************************************************************
+Function Name:	StartMexicanTrain
 
+Purpose:		check to place a tile on the mexican train if it has not been started.
 
+Parameters:
+				1) a_trainslist[] --> pointer to the pointers array of train object
+				2) a_tilenumber --> integer number of the tile which can be played to start the mexican train and
+					passed by reference.
 
-bool Player::StartMexicanTrain(Train* trainslist[], int  & tilenumber, Train & train)
+Return Value:
+				boolean value --> true if mexican train can be started false otherwise. 
+Algorithm:
+				check if the mexican tile has been started. If not try to start a mexican train.
+
+Assistance Received: none
+********************************************************************* */
+bool Player::StartMexicanTrain(Train* a_trainslist[], int  & a_tilenumber, Train & a_train)
 {
-	if ((**(trainslist + 2)).Size() == 1 && CanPlayinTrain(**(trainslist + 2))) {
+	if ((**(a_trainslist + 2)).Size() == 1 && CanPlayinTrain(**(a_trainslist + 2))) {
 	
-		tilenumber = GetPlayableTile(**(trainslist + 2));
-		train = **(trainslist+2) ;
+		a_tilenumber = GetPlayableTile(**(a_trainslist + 2));
+		a_train = **(a_trainslist+2) ;
 		return true;
 			
 	}
@@ -247,54 +474,92 @@ bool Player::StartMexicanTrain(Train* trainslist[], int  & tilenumber, Train & t
 
 
 
-bool Player::Playopponenttrain( Train * trainslist[], Train opponentTrain, int & tilenumber, Train &  train )
+/* *********************************************************************
+Function Name:	Playopponenttrain
+
+Purpose:		Check if the opponent train can be played and return the tile that can be played
+
+Parameters:
+				1)	a_trainslist[] --> pointer to the pointers array of train object
+				2) a_opponentTrain --> train where the tile is to be placed
+				3) a_tilenumber --> integer number of the tile which can be played to start the mexican train and
+					passed by reference.
+				4) a_train --> self train of the player.
+
+Return Value:
+				boolean value --> true if opponent train can be played.
+Algorithm:
+				check if opponent train is marked. If yes try to find a tile that can be played
+				and return value accordingly.
+
+Assistance Received: none
+********************************************************************* */
+bool Player::Playopponenttrain( Train * a_trainslist[], Train a_opponentTrain, int & a_tilenumber, Train &  a_train )
 {
 
 	//opponent train is just a copy and not reference as it is used for searching a double tile and not modyfying it.
-	if (opponentTrain.isTrainMarked()) {
-		if (CanPlayDouble(opponentTrain)) {
-			tilenumber = GetPlayableDouble(opponentTrain);
-			train = opponentTrain;
+	if (a_opponentTrain.isTrainMarked()) {
+		if (CanPlayDouble(a_opponentTrain)) {
+			a_tilenumber = GetPlayableDouble(a_opponentTrain);
+			a_train = a_opponentTrain;
 			return true;
 
 		}
-		else if (CanPlayinTrain(opponentTrain)) {
-			tilenumber = GetPlayableTile(opponentTrain);
-			train = opponentTrain;
+		else if (CanPlayinTrain(a_opponentTrain)) {
+			a_tilenumber = GetPlayableTile(a_opponentTrain);
+			a_train = a_opponentTrain;
 			return true;
-
 		}
-
-
 	}
 	return false;
 }
 
 
-bool Player::PlayOrphanDoublemove(Train* trainslist[], int & tilenumber, Train& train, Train & opponentTrain)
+
+/* *********************************************************************
+Function Name:	Playopponenttrain
+
+Purpose:		Check if the Orphandouble move can be played and return the tile that can be played
+
+Parameters:
+				1)	a_trainslist --> pointer to the pointers array of train object
+				2) a_opponentTrain --> train where the tile is to be placed
+				3) a_tilenumber --> integer number of the tile which can be played to start the mexican train and
+					passed by reference.
+				4) a_train --> self train of the player.
+
+Return Value:
+				boolean value --> true if Orphan double move can be played.
+Algorithm:
+				check if player can play double on a valid train and non double on any other train except the first one.
+
+Assistance Received: none
+********************************************************************* */
+bool Player::PlayOrphanDoublemove(Train* a_trainslist[], int & a_tilenumber, Train& a_train, Train & a_opponentTrain)
 {
-	bool opponentplayable = opponentTrain.isTrainMarked();
-	string opponenttrain = opponentTrain.trainType();
+	//helps to decide if the opponent train is playable or not.
+	bool opponentplayable = a_opponentTrain.isTrainMarked();
+	string opponenttrain = a_opponentTrain.trainType();
 	if (opponentplayable) {
 		//should be able to play double on the user train and non double on any other train.
-		if (CanPlayDouble(**trainslist)) {
-			if (CanPlayNonDouble(**(trainslist + 1)) || CanPlayNonDouble(**(trainslist + 2))) {
-				tilenumber= GetPlayableDouble(**trainslist);
-				train=**trainslist;
+		if (CanPlayDouble(**a_trainslist)) {
+			if (CanPlayNonDouble(**(a_trainslist + 1)) || CanPlayNonDouble(**(a_trainslist + 2))) {
+				a_tilenumber= GetPlayableDouble(**a_trainslist);
+				a_train=**a_trainslist;
 				return true;
 			}
 		}
-		else if (CanPlayDouble(**(trainslist+1))) {
-			if (CanPlayNonDouble(**(trainslist)) || CanPlayNonDouble(**(trainslist + 2))) {
-				tilenumber = GetPlayableDouble(**(trainslist+1));
-				train = **(trainslist+1);
+		else if (CanPlayDouble(**(a_trainslist+1))) {
+			if (CanPlayNonDouble(**(a_trainslist)) || CanPlayNonDouble(**(a_trainslist + 2))) {
+				a_tilenumber = GetPlayableDouble(**(a_trainslist+1));
+				a_train = **(a_trainslist+1);
 				return true;
 			}
 		}
-		else if (CanPlayDouble(**(trainslist+2))) {
-			if (CanPlayNonDouble(**(trainslist)) || CanPlayNonDouble(**(trainslist + 1))) {
-				tilenumber = GetPlayableDouble(**(trainslist + 2));
-				train = **(trainslist + 2);
+		else if (CanPlayDouble(**(a_trainslist+2))) {
+			if (CanPlayNonDouble(**(a_trainslist)) || CanPlayNonDouble(**(a_trainslist + 1))) {
+				a_tilenumber = GetPlayableDouble(**(a_trainslist + 2));
+				a_train = **(a_trainslist + 2);
 				return true;
 			}
 		}
@@ -303,29 +568,29 @@ bool Player::PlayOrphanDoublemove(Train* trainslist[], int & tilenumber, Train& 
 		}
 	}
 	else {
-		if (opponentTrain.trainType() == "computertrain") {
+		if (a_opponentTrain.trainType() == "computertrain") {
 
-			if (CanPlayDouble(**trainslist)  && CanPlayNonDouble(**(trainslist+2)) ) {
-				tilenumber = GetPlayableDouble(**trainslist);
-				train = **trainslist;
+			if (CanPlayDouble(**a_trainslist)  && CanPlayNonDouble(**(a_trainslist+2)) ) {
+				a_tilenumber = GetPlayableDouble(**a_trainslist);
+				a_train = **a_trainslist;
 				return true;
 			}
-			else if (CanPlayDouble(**(trainslist+2))  && CanPlayNonDouble(**trainslist)) {
-				tilenumber = GetPlayableDouble(**(trainslist+2));
-				train = **(trainslist+2);
+			else if (CanPlayDouble(**(a_trainslist+2))  && CanPlayNonDouble(**a_trainslist)) {
+				a_tilenumber = GetPlayableDouble(**(a_trainslist+2));
+				a_train = **(a_trainslist+2);
 				return true;
 			}
 
 		}
-		else if (opponentTrain.trainType()=="usertrain") {
-			if (CanPlayDouble(**(trainslist+1)) && CanPlayNonDouble(**(trainslist + 2))) {
-				tilenumber = GetPlayableDouble(**(trainslist+1));
-				train = **(trainslist+1);
+		else if (a_opponentTrain.trainType()=="usertrain") {
+			if (CanPlayDouble(**(a_trainslist+1)) && CanPlayNonDouble(**(a_trainslist + 2))) {
+				a_tilenumber = GetPlayableDouble(**(a_trainslist+1));
+				a_train = **(a_trainslist+1);
 				return true;
 			}
-			else if (CanPlayDouble(**(trainslist + 2)) && CanPlayNonDouble(**(trainslist+1))) {
-				tilenumber = GetPlayableDouble(**(trainslist + 2));
-				train = **(trainslist + 2);
+			else if (CanPlayDouble(**(a_trainslist + 2)) && CanPlayNonDouble(**(a_trainslist+1))) {
+				a_tilenumber = GetPlayableDouble(**(a_trainslist + 2));
+				a_train = **(a_trainslist + 2);
 				return true;
 			}
 		}
@@ -337,31 +602,86 @@ bool Player::PlayOrphanDoublemove(Train* trainslist[], int & tilenumber, Train& 
 
 }
 
-bool Player::PlayMexicanTrain(Train* trainslist[], int& tilenumber, Train& train)
+/* *********************************************************************
+Function Name:	PlayMexicanTrain
+
+Purpose:		Check if the move can be played on mexican train and return the tile that can be played
+
+Parameters:
+				1) a_trainslist[] --> pointer to the pointers array of train object
+				2) a_tilenumber --> integer number of the tile which can be played to start the mexican train and
+					passed by reference.
+				3) a_train --> mexican train
+
+Return Value:
+				boolean value --> true if move can be played on mexican train.
+Algorithm:
+				check if player can play a tile on a mexican train.
+				store the tilenumber on the variable passed by reference.
+
+Assistance Received: none
+********************************************************************* */
+bool Player::PlayMexicanTrain(Train* a_trainslist[], int& a_tilenumber, Train& a_train)
 {
-	if (CanPlayinTrain(**(trainslist + 2))) {
-		tilenumber= GetPlayableTile(**(trainslist + 2));
-		train = **(trainslist + 2);
+	if (CanPlayinTrain(**(a_trainslist + 2))) {
+		a_tilenumber= GetPlayableTile(**(a_trainslist + 2));
+		a_train = **(a_trainslist + 2);
 		return true;
 	}
 	return false;
 }
 
-bool Player::PlaySelfTrain(Train* trainslist[], int& tilenumber, Train selftrain)
+
+/* *********************************************************************
+Function Name:	PlaySelfTrain
+
+Purpose:		Check if the move can be played on self train and return the tile that can be played
+
+Parameters:
+				1) a_trainslist[] --> pointer to the pointers array of train object
+				2) a_tilenumber --> integer number of the tile which can be played to start the mexican train and
+					passed by reference.
+				3) a_selftrain--> train of the player.
+
+Return Value:
+				boolean value --> true if move can be played on self train.
+Algorithm:
+				check if player can play a tile on a self train.
+				store the tilenumber on the variable passed by reference.
+
+Assistance Received: none
+********************************************************************* */
+bool Player::PlaySelfTrain(Train* a_trainslist[], int& a_tilenumber, Train a_selftrain)
 {
-	if (CanPlayinTrain(selftrain)) {
-		tilenumber = GetPlayableTile(selftrain);
+	if (CanPlayinTrain(a_selftrain)) {
+		a_tilenumber = GetPlayableTile(a_selftrain);
 		return true;
 	}
 	return false;
 }
 
 
-int Player::Getsum(int tilenumber)
+
+/* *********************************************************************
+Function Name:	Getsum
+
+Purpose:		returns the sum of the two sides of a tile.
+
+Parameters:
+				1) a_tilenumber --> integer value which helps to find the tile in the tileslist.
+
+Return Value:
+				integer value which is sum of two sides.
+Algorithm:
+				none.
+
+Assistance Received: none
+********************************************************************* */
+int Player::Getsum(int a_tilenumber)
 {
-	if (tilenumber > GetPlayerTiles().size()) {
+	if (a_tilenumber > GetPlayerTiles().size()) {
 		return 0;
 	}
-	Tile tile = GetPlayerTiles().at(tilenumber);
+	Tile tile = GetPlayerTiles().at(a_tilenumber);
 	return tile.GetSide1() + tile.GetSide2();
 }

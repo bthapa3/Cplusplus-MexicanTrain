@@ -13,26 +13,26 @@ class Tile
 	public:
 		
 		Tile() {
-			side1 = -1;
-			side2 = -1;
+			m_side1 = -1;
+			m_side2 = -1;
 		
 		};
 		Tile(int firstside, int secondside) {
-			side1 = firstside;
-			side2 = secondside;
+			m_side1 = firstside;
+			m_side2 = secondside;
 		}
 		~Tile() {};
 
 		inline int GetSide1() {
-			return side1;
+			return m_side1;
 		}
 		inline int GetSide2() {
-			return side2;
+			return m_side2;
 		}
 		void Filpside();
 	private:
 
-		int side1;
-		int side2;
+		int m_side1;
+		int m_side2;
 };
 

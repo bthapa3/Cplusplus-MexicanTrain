@@ -13,23 +13,34 @@
 /* *********************************************************************
 Function Name: PlayMove
 Purpose: To proceed to the next move of the computer
+
 Parameters: 
-			1) trainslist  --> pointer to the pointers array of train object
-			2) boneyard    --> vector of boneyard tiles passed with reference
-			3) continuedmove  --> integer value that tells the number of times user has played prior moves without alternating.
-			4) quit --> boolean value that is set to true when user want to serialize and quit.
+			1) a_trainslist  --> pointer to the pointers array of train object
+			2) a_boneyard    --> vector of boneyard tiles passed with reference
+			3) a_continuedmove  --> integer value that tells the number of times user has played prior moves without alternating.
+			4) a_quit --> boolean value that is set to true when user want to serialize and quit.
+
 Return Value: 
 			returns a boolean value that states if the user played a double tile.
 
-Local Variables: None
-Algorithm: Loop through mHandPile vector and display the card
+Algorithm: If orphan train present and this is not a continous second turn:
+					- Check if can play orphan double train and suggest tile
+					- If not suggest to pick boneyard tile
+				else-
+					-if playing for first time try to start mexican train
+					-try to play orphan double train
+					-try to play opponent train
+					-if a double tile played before avoid playing on same train
+					-try playing biggest tile on one of computer or mexican train
+					-pick tile from boneyard
+			
 Assistance Received: None
 ********************************************************************* */
-bool Computer::PlayMove(Train* trainslist[], vector<Tile>& boneyard,int continuedmove, bool & quit)
+bool Computer::PlayMove(Train* trainslist[], vector<Tile>& a_boneyard,int a_continuedmove, bool & a_quit)
 {
-	
+	//check stores a char value and checks everytime if user want to continue or serialize
 	string check = "X";
-	if (continuedmove > 0) {
+	if (a_continuedmove > 0) {
 		cout << "Since computer played a double tile, computer gets one more play." << endl;
 	}
 	while (check != "S" && check != "C") {
@@ -42,7 +53,7 @@ bool Computer::PlayMove(Train* trainslist[], vector<Tile>& boneyard,int continue
 		cout << ">>";
 		cin >> check;
 		if (check == "S") {
-			quit = true;
+			a_quit = true;
 			return false;
 		}
 	}
@@ -56,16 +67,16 @@ bool Computer::PlayMove(Train* trainslist[], vector<Tile>& boneyard,int continue
 	char traintype;
 
 	//check if there is a orphan double train present
-	if (continuedmove == 0 && OrphanDoublePresent(trainslist, traintype)) {
+	if (a_continuedmove == 0 && OrphanDoublePresent(trainslist, traintype)) {
 		//move to the orphan double train as needed.
 		if (traintype == 'U' && (checkOrphanandMove(trainslist, **trainslist))) return turn_repeat;
 		if (traintype == 'M' && (checkOrphanandMove(trainslist, **(trainslist+2)))) return turn_repeat;
 		if (traintype == 'C' && (checkOrphanandMove(trainslist, **(trainslist + 1)))) return turn_repeat;
 		
-		cout << "Computer didnot have any tiles to play for orphan double train so boneyard tile was added:" << boneyard.at(0).GetSide1() << "-" << boneyard.at(0).GetSide2() << endl;
+		cout << "Computer didnot have any tiles to play for orphan double train so boneyard tile was added:" << a_boneyard.at(0).GetSide1() << "-" << a_boneyard.at(0).GetSide2() << endl;
 		
 		//if tile was present on boneyard and picked try to place on the user train.
-		if (PickBoneyard(boneyard, **(trainslist + 1))) {
+		if (PickBoneyard(a_boneyard, **(trainslist + 1))) {
 			BoneyardtoTrain(trainslist, turn_repeat);
 			return turn_repeat;
 		}
@@ -78,8 +89,6 @@ bool Computer::PlayMove(Train* trainslist[], vector<Tile>& boneyard,int continue
 
 	}
 
-	//ERRORS: souble tile can be placed without giving double train if computer detects orphan double is not going to be valid.needs setrepeating.
-
 
 	//checks if the mexican train is empty if so adds tile if available.
 	if (StartMexicanTrain(trainslist, tilenumber, train)) {
@@ -88,25 +97,25 @@ bool Computer::PlayMove(Train* trainslist[], vector<Tile>& boneyard,int continue
 		return turn_repeat;
 	}
 
+
+	//check if you can force other player to play orphan double train & orphan double cannot be played more than two times.
+	//continuedmove value is 0 and 1 for first two times.
+	if (PlayOrphanDoublemove(trainslist, tilenumber, train, **trainslist)  && a_continuedmove<2 ) {
+		Tile mytile = GetPlayerTiles().at(tilenumber - 1);
+		if ((a_continuedmove==0) || (a_continuedmove == 1 && ValidsecondDouble(trainslist, train,mytile) )) {
+			DisplayTileMove(tilenumber, train, "it forces opponent to play orphan double train");
+			SetRepeating(turn_repeat, tilenumber);
+			MoveTiletoTrain(trainslist, tilenumber, train);
+			return turn_repeat;
+		}
+	}
+
 	// second argument **trainslist is the train of the opponent player as current player is computer.
 	if (Playopponenttrain(trainslist, **(trainslist), tilenumber, train)) {
 		DisplayTileMove(tilenumber, train, "the opponent train had marker");
 		SetRepeating(turn_repeat, tilenumber);
 		MoveTiletoTrain(trainslist, tilenumber, train);
 		return turn_repeat;
-	}
-
-
-	//check if you can force other player to play orphan double train & orphan double cannot be played more than two times.
-	//continued move value is 0 and 1 for first two times.
-	if (PlayOrphanDoublemove(trainslist, tilenumber, train, **trainslist)  && continuedmove<2 ) {
-		Tile mytile = GetPlayerTiles().at(tilenumber - 1);
-		if ((continuedmove==0) || (continuedmove == 1 && ValidsecondDouble(trainslist, train,mytile) )) {
-			DisplayTileMove(tilenumber, train, "it forces opponent to play orphan double train");
-			SetRepeating(turn_repeat, tilenumber);
-			MoveTiletoTrain(trainslist, tilenumber, train);
-			return turn_repeat;
-		}
 	}
 
 
@@ -130,7 +139,7 @@ bool Computer::PlayMove(Train* trainslist[], vector<Tile>& boneyard,int continue
 	//if the computer played double tile before on the computer or mexican train try not to play itself
 	// if computer played double tile on user train still will try to play on opponent train as per winning strategy.
 	//continued move means the user has played a double tile before.
-	if (continuedmove == 1) {
+	if (a_continuedmove == 1) {
 		OrphanDoublePresent(trainslist, traintype);
 		if (traintype == 'C' && can_playmexican) {
 			DisplayTileMove(mexicantile, **(trainslist + 2), "it is the largest possible tile to play and helps for orphan double");
@@ -144,7 +153,7 @@ bool Computer::PlayMove(Train* trainslist[], vector<Tile>& boneyard,int continue
 		}
 	}
 
-
+	//calculates the sum of tiles and plays on the train where sum is bigger.
 	if (((can_playmexican && can_playself) && selfsum >= mexicansum) || (can_playself && !can_playmexican)) {
 
 		DisplayTileMove(selftile, **(trainslist + 1), "it is the largest possible tile to play");
@@ -153,6 +162,8 @@ bool Computer::PlayMove(Train* trainslist[], vector<Tile>& boneyard,int continue
 		return turn_repeat;
 
 	}
+
+	//calculates the sum of tiles and plays on the train where sum is bigger.
 	else if (((can_playmexican && can_playself) && selfsum < mexicansum) || (!can_playself && can_playmexican)) {
 
 		DisplayTileMove(mexicantile, **(trainslist + 2), "it is the largest possible tile to play");
@@ -160,37 +171,57 @@ bool Computer::PlayMove(Train* trainslist[], vector<Tile>& boneyard,int continue
 		MoveTiletoTrain(trainslist, mexicantile, mexicantrain);
 		return turn_repeat;
 	}
+
+	//if none of the trains are playable
 	else {
 		cout << "Computer didnot have any tiles to play so boneyard tile was added to tiles list" << endl;
-		cout << "Tile added:" << boneyard.at(0).GetSide1() << "-" << boneyard.at(0).GetSide2() << endl;
+		cout << "Tile added:" << a_boneyard.at(0).GetSide1() << "-" << a_boneyard.at(0).GetSide2() << endl;
 		//if tile was present on boneyard and picked try to place on the user train.
-		if (PickBoneyard(boneyard, **(trainslist + 1))) {
+		if (PickBoneyard(a_boneyard, **(trainslist + 1))) {
 			BoneyardtoTrain(trainslist, turn_repeat);
 			return turn_repeat;
 		}
 		else {
-			cout << "boneyard had no tiles. so just train is marked." << endl;
+			cout << "Boneyard had no tiles. so just train is marked." << endl;
 			
 		}
 		
+		//this is just for pausing and displaying last move to user. 
 		DisplayandContinue();
 		return turn_repeat;
-
 	}		
 }
 
 
-void Computer::BoneyardtoTrain(Train* trainslist[], bool& replay)
+/* *********************************************************************
+Function Name: BoneyardtoTrain
+Purpose: To move the tile picked from the boneyard by the user to a valid train.
+Parameters:
+			1) a_trainslist  --> pointer to the pointers array of train object
+			2) a_replay --> boolean value that states if a user gets another turn to play in case of double tile.
+
+Return Value:
+			none
+
+Algorithm: 
+			If Orphan double train is present check if boneyard tile can be placed there. If no 
+			orphan double train try to place on the trains in the order opponent train, mexican train,
+			self train.
+
+Assistance Received: None
+********************************************************************* */
+
+void Computer::BoneyardtoTrain(Train* a_trainslist[], bool& a_replay)
 {
 	Tile last_tile = GetPlayerTiles().at(GetPlayerTiles().size() - 1);
 	char train;
-	if (OrphanDoublePresent(trainslist, train)) {
+	if (OrphanDoublePresent(a_trainslist, train)) {
 		if (train == 'U') {
-			if (CanPlayinTrain(**trainslist)) {
-				int tile_number = GetPlayableTile(**trainslist);
-				SetRepeating(replay, tile_number);
-				DisplayTileMove(tile_number, **trainslist, "boneyard tile matched with orphan double train");
-				MoveTiletoTrain(trainslist, tile_number, **trainslist);
+			if (CanPlayinTrain(**a_trainslist)) {
+				int tile_number = GetPlayableTile(**a_trainslist);
+				SetRepeating(a_replay, tile_number);
+				DisplayTileMove(tile_number, **a_trainslist, "boneyard tile matched with orphan double train");
+				MoveTiletoTrain(a_trainslist, tile_number, **a_trainslist);
 				return;
 				
 			}
@@ -199,11 +230,11 @@ void Computer::BoneyardtoTrain(Train* trainslist[], bool& replay)
 			}
 		}
 		else if (train == 'C') {
-			if (CanPlayinTrain(**(trainslist+1))) {
-				int tile_number = GetPlayableTile(**(trainslist+1));
-				SetRepeating(replay, tile_number);
-				DisplayTileMove(tile_number, **(trainslist + 1), "boneyard tile matched with orphan double train");
-				MoveTiletoTrain(trainslist, tile_number, **(trainslist+1));
+			if (CanPlayinTrain(**(a_trainslist+1))) {
+				int tile_number = GetPlayableTile(**(a_trainslist+1));
+				SetRepeating(a_replay, tile_number);
+				DisplayTileMove(tile_number, **(a_trainslist + 1), "boneyard tile matched with orphan double train");
+				MoveTiletoTrain(a_trainslist, tile_number, **(a_trainslist+1));
 				return;
 			}
 			else {
@@ -211,11 +242,11 @@ void Computer::BoneyardtoTrain(Train* trainslist[], bool& replay)
 			}
 		}
 		else if (train == 'M') {
-			if (CanPlayinTrain(**(trainslist+2))) {
-				int tile_number = GetPlayableTile(**(trainslist+2));
-				SetRepeating(replay, tile_number);
-				DisplayTileMove(tile_number, **(trainslist + 2), "boneyard tile matched with orphan double train");
-				MoveTiletoTrain(trainslist, tile_number, **(trainslist+2));
+			if (CanPlayinTrain(**(a_trainslist+2))) {
+				int tile_number = GetPlayableTile(**(a_trainslist+2));
+				SetRepeating(a_replay, tile_number);
+				DisplayTileMove(tile_number, **(a_trainslist + 2), "boneyard tile matched with orphan double train");
+				MoveTiletoTrain(a_trainslist, tile_number, **(a_trainslist+2));
 				return;
 			}
 			else {
@@ -224,29 +255,29 @@ void Computer::BoneyardtoTrain(Train* trainslist[], bool& replay)
 		}
 	}
 	else {
-		//priority player train
-		if ((**trainslist).isTrainMarked() && CanPlayinTrain(**trainslist)) {
-			int tile_number = GetPlayableTile(**trainslist);
-			SetRepeating(replay, tile_number);
-			DisplayTileMove(tile_number, **trainslist, "boneyard tile matched with opponent train");
-			MoveTiletoTrain(trainslist, tile_number, **trainslist);
+		//priority player train(opponent)
+		if ((**a_trainslist).isTrainMarked() && CanPlayinTrain(**a_trainslist)) {
+			int tile_number = GetPlayableTile(**a_trainslist);
+			SetRepeating(a_replay, tile_number);
+			DisplayTileMove(tile_number, **a_trainslist, "boneyard tile matched with opponent train");
+			MoveTiletoTrain(a_trainslist, tile_number, **a_trainslist);
 			return;
 
 		}
 		// than play mexican train
-		else if (CanPlayinTrain(**(trainslist + 2))) {
-			int tile_number = GetPlayableTile(**(trainslist + 2));
-			SetRepeating(replay, tile_number);
-			DisplayTileMove(tile_number, **(trainslist + 2), "boneyard tile matched with mexican train");
-			MoveTiletoTrain(trainslist, tile_number, **(trainslist + 2));
+		else if (CanPlayinTrain(**(a_trainslist + 2))) {
+			int tile_number = GetPlayableTile(**(a_trainslist + 2));
+			SetRepeating(a_replay, tile_number);
+			DisplayTileMove(tile_number, **(a_trainslist + 2), "boneyard tile matched with mexican train");
+			MoveTiletoTrain(a_trainslist, tile_number, **(a_trainslist + 2));
 			return;
 		}
-		//play own train at the end
-		else if (CanPlayinTrain(**(trainslist + 1))) {
-			int tile_number = GetPlayableTile(**(trainslist + 1));
-			SetRepeating(replay, tile_number);
-			DisplayTileMove(tile_number, **(trainslist + 1), "boneyard tile matched with self train");
-			MoveTiletoTrain(trainslist, tile_number, **(trainslist + 1));
+		//play computer train at the end(self train)
+		else if (CanPlayinTrain(**(a_trainslist + 1))) {
+			int tile_number = GetPlayableTile(**(a_trainslist + 1));
+			SetRepeating(a_replay, tile_number);
+			DisplayTileMove(tile_number, **(a_trainslist + 1), "boneyard tile matched with self train");
+			MoveTiletoTrain(a_trainslist, tile_number, **(a_trainslist + 1));
 			return;
 		}
 		else {
@@ -256,18 +287,51 @@ void Computer::BoneyardtoTrain(Train* trainslist[], bool& replay)
 	}
 }
 
-bool Computer::checkOrphanandMove(Train * trainslist[],Train& train)
+/* *********************************************************************
+Function Name: checkOrphanandMove
+Purpose: To check if any tile can be placed on the orphan double train
+
+Parameters:
+			1) a_trainslist  --> pointer to the pointers array of train object
+			2) a_train --> Orphan Double train where tile is to be placed.
+
+Return Value:
+			returns a boolean value if the tiles was placed , false otherwise.
+
+Algorithm:
+			Check if any of the player's tiles can be placed on the orphan double train.
+			If tile found, move it to the train and display information regarding that.
+
+Assistance Received: None
+********************************************************************* */
+
+bool Computer::checkOrphanandMove(Train * a_trainslist[],Train& a_train)
 {
 	
-	if (CanPlayinTrain(train)) {
+	if (CanPlayinTrain(a_train)) {
 
-		int tilenumber = GetPlayableTile(train);
-		DisplayTileMove(tilenumber, train, "it was the orphan double train");
-		MoveTiletoTrain(trainslist, tilenumber,train);
+		int tilenumber = GetPlayableTile(a_train);
+		DisplayTileMove(tilenumber, a_train, "it was the orphan double train");
+		MoveTiletoTrain(a_trainslist, tilenumber,a_train);
 		return true;
 	}	
 }
 
+/* *********************************************************************
+Function Name:	DisplayandContinue
+Purpose: it takes dummy input to allows users to read the changes and continue
+
+Parameters:
+			none
+
+Return Value:
+			none
+
+Algorithm:
+			none
+
+Assistance Received: None
+********************************************************************* */
 void Computer::DisplayandContinue()
 {
 	string dummyin;
@@ -275,11 +339,29 @@ void Computer::DisplayandContinue()
 	cin >> dummyin;
 }
 
-void Computer::DisplayTileMove(int tilenumber, Train train, string goal)
+
+/* *********************************************************************
+Function Name:	DisplayTileMove
+Purpose: Display a reasoning, tiles and train whenever a player's tile is moved to a train
+
+Parameters:
+			a_tilenumber --> tilenumber of the tile to be moved. Relates to tile number displayed on screen.
+			a_train --> Train where the tile is to be moved.
+			a_goal --> reasoning behind the move of the tile.
+
+Return Value:
+			none
+
+Algorithm:
+			none
+
+Assistance Received: None
+********************************************************************* */
+void Computer::DisplayTileMove(int a_tilenumber, Train a_train, string a_goal)
 {
-	string tile = to_string(GetPlayerTiles().at(tilenumber - 1).GetSide1()) + '-' + to_string(GetPlayerTiles().at(tilenumber - 1).GetSide2());
-	string trainname = train.trainType();
-	cout << "Tile: " << tile << " was moved to the " << trainname << " as " << goal << endl;
+	string tile = to_string(GetPlayerTiles().at(a_tilenumber - 1).GetSide1()) + '-' + to_string(GetPlayerTiles().at(a_tilenumber - 1).GetSide2());
+	string trainname = a_train.trainType();
+	cout << "Tile: " << tile << " was moved to the " << trainname << " as " << a_goal << endl;
 	cout << "---------------------------------------------------------------------------------" << endl;
 	cout << "Enter y to continue>>";
 	string dummyinput;
@@ -288,33 +370,70 @@ void Computer::DisplayTileMove(int tilenumber, Train train, string goal)
 
 }
 
-void Computer::SetRepeating(bool& replay, int tilenumber)
+
+/* *********************************************************************
+Function Name:	SetRepeating
+Purpose: 
+				Modify the replay varaible value to allow the user to play a tile twice in case double tile exists.
+
+Parameters:
+			a_tilenumber --> tilenumber of the tile to be moved. Relates to tile number displayed on screen.
+			a_replay --> variable that holds boolean value which states if player gets to play again
+
+Return Value:
+			none
+
+Algorithm:
+			if tile is a double tile set replay to true.
+
+Assistance Received: None
+********************************************************************* */
+void Computer::SetRepeating(bool& a_replay, int a_tilenumber)
 {
-	if (GetPlayerTiles().at(tilenumber - 1).GetSide1() == GetPlayerTiles().at(tilenumber - 1).GetSide2()) {
-		replay = true;
+	if (GetPlayerTiles().at(a_tilenumber - 1).GetSide1() == GetPlayerTiles().at(a_tilenumber - 1).GetSide2()) {
+		a_replay = true;
 	}
 	return;
 }
 
 
-void Computer::MoveTiletoTrain(Train* trainslist[], int tilenumber, Train train)
+
+/* *********************************************************************
+Function Name:	MoveTiletoTrain
+Purpose:		Move a given computer tile with tilenumber to a given train.
+
+Parameters:
+			1) a_trainslist  --> pointer to the pointers array of train object
+			2) a_tilenumber --> position of tile on the tile list that relates to the value displayed on the screen.
+			3) a_train --> train where the tile is to be moved.
+
+Return Value:
+			none
+
+Algorithm:
+			move tile to the train. If the train is computer train and there is a marker placed 
+			remove marker.
+
+Assistance Received: None
+********************************************************************* */
+void Computer::MoveTiletoTrain(Train* a_trainslist[], int a_tilenumber, Train a_train)
 {
-	Tile tiletoadd = GetPlayerTiles().at(tilenumber - 1);
+	Tile tiletoadd = GetPlayerTiles().at(a_tilenumber - 1);
 	//here train type is checked because we cannot modify on the copy of the train object.
-	if (train.trainType() == "usertrain") {
-		CheckTrainMove(**trainslist, tiletoadd, tilenumber);
+	if (a_train.trainType() == "usertrain") {
+		CheckTrainMove(**a_trainslist, tiletoadd, a_tilenumber);
 
 	}
-	else if (train.trainType() == "computertrain") {
-		CheckTrainMove(**(trainslist + 1), tiletoadd, tilenumber);
+	else if (a_train.trainType() == "computertrain") {
+		CheckTrainMove(**(a_trainslist + 1), tiletoadd, a_tilenumber);
 		//since computer player is the only player using this function removing mark from here works.
-		(**(trainslist + 1)).RemoveMark();
+		(**(a_trainslist + 1)).RemoveMark();
 
 	}
-	else if (train.trainType() == "mexicantrain") {
-		CheckTrainMove(**(trainslist + 2), tiletoadd, tilenumber);
+	else if (a_train.trainType() == "mexicantrain") {
+		CheckTrainMove(**(a_trainslist + 2), tiletoadd, a_tilenumber);
 	}
 	else {
-		cout << "train type is: " << train.trainType() << endl;
+		cout << "train type is: " << a_train.trainType() << endl;
 	}
 }

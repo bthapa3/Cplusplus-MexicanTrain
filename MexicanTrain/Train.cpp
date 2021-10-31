@@ -8,17 +8,24 @@
 */
 #include "Train.h"
 
-void Train::Addtile(Tile tiletobeadded)
-{
-	traintiles.push_back(tiletobeadded);
-}	
+/* *********************************************************************
+Function Name:	    Addtile
 
-void Train::RemoveTile(int position)
+Purpose:          Adds a given tile to the end of the tiles list.
+
+Parameters:
+			  a_tiletobeadded --> Tile object which needs to be added to the end of the train.
+
+
+Return Value:
+			   none.
+Algorithm:
+			   none.
+
+Assistance Received: none
+********************************************************************* */
+void Train::Addtile(Tile a_tiletobeadded)
 {
-	if (position > traintiles.size()) {
-		cout << "Invalid position to remove tile from" << endl;
-		return;
-	}
-	traintiles.erase(traintiles.begin() + position);
-}
+	m_traintiles.push_back(a_tiletobeadded);
+}	
 

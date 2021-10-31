@@ -6,17 +6,17 @@
 * Date:  09/27/2020				                           *
 ************************************************************
 */
+#include "Game.h"
+
 
 // MexicanTrain.cpp : This file contains the 'main' function. Program execution begins and ends there.
-using namespace std;
-#include <iostream>
-#include "Game.h"
+
+
 int main()
 {
     //creating a new game object and starting a game
     Game newgame = Game();
     newgame.StartGame();
-   
    
 }
  

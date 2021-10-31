@@ -9,6 +9,27 @@
 #include "User.h"
 
 
+/* *********************************************************************
+Function Name:	PlayMove
+
+Purpose:		This function helps the human player to make next move by taking inputs and checking 
+				train and tiles chosen are valid. It also provides help as needed by displaying 
+				information.
+
+Parameters:
+				a_trainslist[] --> pointer to the pointers array of train object
+				a_boneyard --> vector of boneyard tiles passed by reference.
+				a_continuedmove --> integer value which denotes how many times same player has played continously.
+				a_quit --> boolean value that represents if the user wants to save the game and quit.
+
+Return Value:
+			  boolean --> which denotes if the user can make one more move continously.
+Algorithm:
+			  take input from the user to find train and tiles to play. If not valid ask for input again.
+
+
+Assistance Received: none
+********************************************************************* */
 bool User::PlayMove(Train* trainslist[], vector<Tile> &boneyard, int continuedmove, bool & quit)
 {
 	cout << "------------Next player: Human----------------" << endl;
@@ -17,13 +38,11 @@ bool User::PlayMove(Train* trainslist[], vector<Tile> &boneyard, int continuedmo
 	//if the tile chosen can be attached with train chosen.
 	bool validtile = false;
 	bool replay = false;
-	bool boneyardtile = false;
 	//validating the tilenumber so that user chooses a valid tilenumber to play
 	while(!validtile)
 	{
-		
+		//user input for next move.
 		char input='X';
-		
 		do {
 
 			//if the same players turn is repeated twice.
@@ -162,9 +181,36 @@ bool User::PlayMove(Train* trainslist[], vector<Tile> &boneyard, int continuedmo
 }
 
 
+/* *********************************************************************
+Function Name:	BoneyardtoTrain
 
+Purpose:		This function helps the human player to make next move by taking inputs and checking
+				train and tiles chosen are valid. It also provides help as needed by displaying
+				information.
+
+Parameters:
+				1)	a_trainslist[] --> pointer to the pointers array of train object
+				2)	replay --> boolean object that determines if the user can make one more continous move.
+				3)	validtile --> boolean value that denotes if a player has made a move that completes his turn.	
+				4) continuedmove --> integer value which denotes how many times same player has played before continously.	
+
+Return Value:
+			  none.
+Algorithm:
+			  
+				Take top tile from the usertilelist i.e the first tile
+					If orphan double present 
+						-check if the tile can be played on the orphan double train
+						-If orphan double tile is not playable display and return
+					If orphan double not present
+						-Find a matching train to place the tile
+						-If not train are valid, display and return.
+
+Assistance Received: none
+********************************************************************* */
 void User::BoneyardtoTrain(Train* trainslist[], bool & replay, bool& validtile , int continuedmove)
 {
+	//toptile has a tile that was just moved from boneyard tileslist to playerstile list
 	Tile toptile = GetPlayerTiles().back();
 	char a_train = 'X';
 	Tile tile_to_match;
@@ -247,6 +293,36 @@ void User::BoneyardtoTrain(Train* trainslist[], bool & replay, bool& validtile ,
 
 }
 
+
+
+/* *********************************************************************
+Function Name:	Playsuggestor
+
+Purpose:		This function is used to help the human player to decide to make the next move.
+				It is similar to computer play move function but it doesnot make a move but just displays the message.
+
+Parameters:
+				1)	a_trainslist[] --> pointer to the pointers array of train object
+				2) boneyard --> vector of boneyard tiles passed with reference.
+				3) continuedmove --> integer value which denotes how many times same player has played before continously.
+
+Return Value:
+			  none.
+Algorithm:
+
+				If orphan train present and this is not a continous second turn:
+					- Check if can play orphan double train and suggest tile
+					- If not suggest to pick boneyard tile
+				else-
+					-if playing for first time try to start mexican train
+					-try to play orphan double train
+					-try to play opponent train
+					-if a double tile played before avoid playing on same train
+					-try playing biggest tile on one of user or mexican train
+					-pick tile from boneyard
+
+Assistance Received: none
+********************************************************************* */
 void User::Playsuggestor(Train* trainslist[], vector<Tile>& boneyard, int continuedmove)
 {
 
@@ -255,6 +331,7 @@ void User::Playsuggestor(Train* trainslist[], vector<Tile>& boneyard, int contin
 	bool turn_repeat = false;
 	char traintype;
 
+	//Priority goes from up to down.
 	//check if there is a orphan double train present
 	if (continuedmove == 0 && OrphanDoublePresent(trainslist, traintype)) {
 		//move to the orphan double train as needed.
@@ -268,19 +345,14 @@ void User::Playsuggestor(Train* trainslist[], vector<Tile>& boneyard, int contin
 		return;
 
 	}
+
 	//checks if the mexican train is empty if so adds tile if available.
 	if (StartMexicanTrain(trainslist, tilenumber, train)) {
 		DisplaySuggestion(tilenumber, train, "it starts the mexican train");
 		return ;
 	}
 
-	// second argument **trainslist+1 is the train of the opponent player as current player is computer.
-	if (Playopponenttrain(trainslist, **(trainslist+1), tilenumber, train)) {
-		DisplaySuggestion(tilenumber, train, "the opponent train has marker");
-		return ;
-	}
-
-
+	
 	//check if you can force other player to play orphan double train & orphan double cannot be played more than two times.
 	if (PlayOrphanDoublemove(trainslist, tilenumber, train, **(trainslist+1)) && continuedmove < 2) {
 		Tile mytile = GetPlayerTiles().at(tilenumber - 1);
@@ -288,6 +360,12 @@ void User::Playsuggestor(Train* trainslist[], vector<Tile>& boneyard, int contin
 			DisplaySuggestion(tilenumber, train, "it forces opponent to play orphan double train");
 			return ;
 		}
+	}
+
+	// second argument **trainslist+1 is the train of the opponent player as current player is computer.
+	if (Playopponenttrain(trainslist, **(trainslist + 1), tilenumber, train)) {
+		DisplaySuggestion(tilenumber, train, "the opponent train has marker");
+		return;
 	}
 
 
@@ -344,20 +422,59 @@ void User::Playsuggestor(Train* trainslist[], vector<Tile>& boneyard, int contin
 }
 
 
-bool User::SuggestOrphanMove(Train* trainslist[], Train& train)
-{
-	if (CanPlayinTrain(train)) {
+/* *********************************************************************
+Function Name:	SuggestOrphanMove
 
-		int tilenumber = GetPlayableTile(train);
-		DisplaySuggestion(tilenumber, train, "it is the orphan double train");
+Purpose:		This function helps to display a tile, if a tile is playable on the orphan double train.
+
+Parameters:
+				1)	a_trainslist[] --> pointer to the pointers array of train object
+				2)	a_train --> orphan double train to be played.
+
+Return Value:
+				boolean value --> true if orphan double train can be played false otherwise.
+Algorithm:
+
+				Check if can play in orphan double train
+				-display tile number and train to move.
+
+Assistance Received: none
+********************************************************************* */
+bool User::SuggestOrphanMove(Train* a_trainslist[], Train& a_train)
+{
+	if (CanPlayinTrain(a_train)) {
+
+		int tilenumber = GetPlayableTile(a_train);
+		DisplaySuggestion(tilenumber, a_train, "it is the orphan double train");
 		return true;
 	}
 }
 
 
+/* *********************************************************************
+Function Name:	DisplaySuggestion
+
+Purpose:		This function is used to display the message on the train and tiles suggested by the helper
+				function. It takes tile , train and the message as input parameters.
+
+Parameters:
+				1)	a_tilnumber --> tile to be played
+				2) a_ train --> train to be played to.
+				3) a_message --> reasoning of why to play to specified train.
+
+Return Value:
+				none.
+Algorithm:
+
+				none.
+
+Assistance Received: none
+********************************************************************* */
 void User::DisplaySuggestion(int tilenumber, Train train, string message) {
 
+	//tile in string format
 	string tile = to_string(GetPlayerTiles().at(tilenumber - 1).GetSide1()) + '-' + to_string(GetPlayerTiles().at(tilenumber - 1).GetSide2());
+	//trainname in string format
 	string trainname = train.trainType();
 	cout << "Move tile: " << tile << " to "<< train.trainType() << " as " << message << endl;
 	cout << "---------------------------------------------------------------------------------" << endl;
@@ -366,8 +483,27 @@ void User::DisplaySuggestion(int tilenumber, Train train, string message) {
 	cin >> dummyinput;
 }
 
+
+/* *********************************************************************
+Function Name:	DisplayBoneyardOptions
+
+Purpose:		This function displays the options for the human player after picking a boneyard tile.
+				This option is only showed if there is no orphan double train and there is a valid tile that
+				can be played in one of these trains.
+
+Parameters:
+
+Return Value:
+				char that represents one of the train.
+Algorithm:
+
+				none.
+
+Assistance Received: none
+********************************************************************* */
 char User::DisplayBoneyardOptions()
 {
+	//char value where the options input is stored
 	char input;
 	cout << "Options:" << endl;
 	cout << " (U) --> add tile to the User train" << endl;
@@ -379,24 +515,44 @@ char User::DisplayBoneyardOptions()
 	return input;
 }
 
-bool User::BoneyardTilePlayable(Tile a_tile, Train* trainslist[])
+/* *********************************************************************
+Function Name:	BoneyardTilePlayable
+
+Purpose:		This function checks if the boneyard tile is playable for the human player.
+
+Parameters:
+				1)  a_tile --> boneyard tile that was picked.
+				2)	a_trainslist[] -->pointer to the pointers array of train object
+			
+Return Value:
+				boolean --> true if boneyard tile is playable to one of the trains, false otherwise.
+Algorithm:
+				-Check usertrain back tile to find if boneyard tile can be placed
+				-Check if computer train is marked
+					- if yes, Check computertrain back tile to find if boneyard tile can be placed
+				-Check mexican train back tile to find if boneyard tile can be placed
+
+Assistance Received: none
+********************************************************************* */
+bool User::BoneyardTilePlayable(Tile a_tile, Train* a_trainslist[])
 {
-	Tile usertrainback = (**trainslist).GetAllTiles().back();
+	//tile of the user train where player tiles can be added
+	Tile usertrainback = (**a_trainslist).GetAllTiles().back();
 	
 	if (usertrainback.GetSide2() == a_tile.GetSide1() || usertrainback.GetSide2() == a_tile.GetSide2()) {
 		return true;
 	}
 
-	Tile computertrainback = (**(trainslist+1)).GetAllTiles().back();
+	Tile computertrainback = (**(a_trainslist+1)).GetAllTiles().back();
 
-	if ((**(trainslist + 1)).isTrainMarked()) {
+	if ((**(a_trainslist + 1)).isTrainMarked()) {
 		if (computertrainback.GetSide2() == a_tile.GetSide1() || computertrainback.GetSide2() == a_tile.GetSide2()) {
 			return true;
 		}
 
 	}
 	
-	Tile mexicantrainback = (**(trainslist + 2)).GetAllTiles().back();
+	Tile mexicantrainback = (**(a_trainslist + 2)).GetAllTiles().back();
 	if (mexicantrainback.GetSide2() == a_tile.GetSide1() || mexicantrainback.GetSide2() == a_tile.GetSide2()) {
 		return true;
 	}
@@ -405,28 +561,56 @@ bool User::BoneyardTilePlayable(Tile a_tile, Train* trainslist[])
 }
 
 
-//this function helps to check if 2 douuble tiles are placeable and returns true if the placement is possible.
-bool User::CheckandPlacesecDouble(Train* trainslist[], Train& chosenTrain, bool& replay, bool& validtile, string a_player)
+
+/* *********************************************************************
+Function Name:	CheckandPlacesecDouble
+
+Purpose:		This function checks if the tile chosen after playing one double tile is playable or not. If so places
+				the tile on chosen train and returns a boolean true value.
+
+Parameters:
+				1)	a_trainslist[] -->pointer to the pointers array of train object
+				2) a_chosentrain --> train where second double tile is about to be placed
+				3) a_replay --> boolean that represents if the user can play one more move continously.
+				4) a_validtile --> boolean that represents if the player has made a move to complete his turn.
+				5) a_player --> string value of the name of the train where tile is to be moved.
+
+
+Return Value:
+				boolean --> true if second double can be played, false otherwise.
+Algorithm:
+				if tile is not double 
+					- go and move the tile to chosen train
+				if tile is a double
+					- check if that tiles meets the requirement of valid second double
+					- if it doesnot meet requirements display message and return false. 
+
+Assistance Received: none
+********************************************************************* */
+bool User::CheckandPlacesecDouble(Train* a_trainslist[], Train& a_chosenTrain, bool& a_replay, bool& a_validtile, string a_train)
 {
+	//tilenumber to play
 	int tile_number = GetValidTile();
+	//represents if tile can be placed or not
 	bool placement_possible = false;
+	//tile chosen by the user.
 	Tile userinput = GetTile(tile_number - 1);
 
 	//if player doesnot choose double tile for the second time
 	if (userinput.GetSide1() != userinput.GetSide2()) {
-		PlaceCustomTiletoTrain(chosenTrain, replay, validtile, a_player, tile_number);
+		PlaceCustomTiletoTrain(a_chosenTrain, a_replay, a_validtile, a_train, tile_number);
 		placement_possible = true;
 	}
 	//if it is a double tile for second turn
 	else {
 		//if a train matches a double tile.
-		if (chosenTrain.GetTop().GetSide2() == userinput.GetSide1() || chosenTrain.GetTop().GetSide2() == userinput.GetSide1()) {
+		if (a_chosenTrain.GetTop().GetSide2() == userinput.GetSide1() || a_chosenTrain.GetTop().GetSide2() == userinput.GetSide1()) {
 
 			//CheckifvalidTileispresent
-			bool double_tile_is_valid = ValidsecondDouble(trainslist, chosenTrain, userinput);
+			bool double_tile_is_valid = ValidsecondDouble(a_trainslist, a_chosenTrain, userinput);
 			if (double_tile_is_valid) {
-				PlaceCustomTiletoTrain(chosenTrain, replay, validtile, a_player, tile_number);
-				replay = true;
+				PlaceCustomTiletoTrain(a_chosenTrain, a_replay, a_validtile, a_train, tile_number);
+				a_replay = true;
 				placement_possible = true;
 			}
 			else {
@@ -441,33 +625,81 @@ bool User::CheckandPlacesecDouble(Train* trainslist[], Train& chosenTrain, bool&
 }
 
 
+/* *********************************************************************
+Function Name:	PlaceCustomTiletoTrain
 
-void User::PlaceCustomTiletoTrain(Train& traintype, bool& replay, bool& validtile, string train, int tile_number)
+Purpose:		This function helps to move the specified tile number to the specified train.
+
+Parameters:
+				1)	a_train--> train where tile is to be placed passed by reference
+				2) a_replay --> boolean that represents if the user can play one more move continously.
+				3) a_validtile --> boolean that represents if the player has made a move to complete his turn.
+				4) a_trainname --> string value of the name of the train where tile is to be moved.
+				5) a_tilenumber --> position of tile in the tiles list.
+
+Return Value:
+				none
+Algorithm:
+				Check if tile can be placed on the train using checkTrainMove function.
+				- if playable
+					- if double tile modify a_replay to true so user gets one more turn
+				-if not playable
+					-display message to show tile cannot be moved.
+			
+
+Assistance Received: none
+********************************************************************* */
+void User::PlaceCustomTiletoTrain(Train& a_train, bool& a_replay, bool& a_validtile, string a_trainname, int a_tilenumber)
 {
 	//using the last tile of the player list which is the boneyard tile.
 	//int tilenumber = GetPlayerTiles().size();
-	int tilenumber = tile_number;
+	int tilenumber = a_tilenumber;
 	Tile nextmove = GetPlayerTiles().at(tilenumber - 1);
 	//Check TrainMove check if the move to the Train is valid or not and returns true if the 
 	//move was successful.
-	if (CheckTrainMove(traintype, nextmove, tilenumber)) {
+	if (CheckTrainMove(a_train, nextmove, tilenumber)) {
 		//this gives one extra chance in condition of OrphanDouble
 		if (nextmove.GetSide1() == nextmove.GetSide2()) {
-			replay = true;
+			a_replay = true;
 		}
-		validtile = true;
+		a_validtile = true;
 		//only work if the train type is User or computer 
 		//traintype.RemoveMark();
 	}
 	else
 	{
-		cout << "The tile you chose cannot be placed on the " + train + " train " << endl;
+		cout << "The tile you chose cannot be placed on the " + a_trainname + " train " << endl;
 
 	}
 }
 
 
-void User::PlaceTiletoTrain(Train& traintype, bool& replay, bool& validtile, string train)
+/* *********************************************************************
+Function Name:	PlaceCustomTiletoTrain
+
+Purpose:		Allows user to input tile number to play and tries to place the chosen tile to the train.
+
+Parameters:
+				1)	a_train--> train where tile is to be placed passed by reference
+				2) a_replay --> boolean that represents if the user can play one more move continously.
+				3) a_validtile --> boolean that represents if the player has made a move to complete his turn.
+				4) a_trainname --> string value of the name of the train where tile is to be moved.
+			
+
+Return Value:
+				none
+Algorithm:
+				-Ask for the user to enter a tilenumber to play on the chosen train
+				-Check if tile can be placed on the train using checkTrainMove function.
+				- if playable
+					- if double tile modify a_replay to true so user gets one more turn
+				-if not playable
+					-display message to show tile cannot be moved.
+
+
+Assistance Received: none
+********************************************************************* */
+void User::PlaceTiletoTrain(Train& a_train, bool& a_replay, bool& a_validtile, string a_trainname)
 {
 	//getting the players tile number input from the user.
 	int tilenumber = GetValidTile();
@@ -481,25 +713,41 @@ void User::PlaceTiletoTrain(Train& traintype, bool& replay, bool& validtile, str
 
 	//Check TrainMove checks if the move to the Train is valid or not and returns true if the 
 	//move was successful.
-	if (CheckTrainMove(traintype, nextmove, tilenumber)) {
+	if (CheckTrainMove(a_train, nextmove, tilenumber)) {
 		//this gives one extra chance in condition of OrphanDouble
 		if (nextmove.GetSide1() == nextmove.GetSide2()) {
-			replay = true;
+			a_replay = true;
 		}
-		validtile = true;
+		a_validtile = true;
 	}
 	else
 	{
-		cout << "The tile you chose cannot be placed on the " + train + " train " << endl;
+		cout << "The tile you chose cannot be placed on the " + a_trainname + " train " << endl;
 
 	}
 
 }
 
 
+/* *********************************************************************
+Function Name:	Displayoptions
 
+Purpose:		This function helps to display options to the human player to make the moves.
+				After the value is returned if the input is not validated this function is called again.
+
+Parameters:
+				none
+
+Return Value:
+				char value which decides the next move
+Algorithm:		
+				none
+
+Assistance Received: none
+********************************************************************* */
 char User::Displayoptions()
 {
+	//this stores the user input for all the options
 	char input;
 	cout << "Options:" << endl;
 	cout << " (U) --> add tile to the User train" << endl;
@@ -515,8 +763,25 @@ char User::Displayoptions()
 }
 
 
+/* *********************************************************************
+Function Name:	GetValidTile
+
+Purpose:		This function allows the user to choose a tile number to play on a train. It also
+				validates the tilenumber and if invalid asks user to enter the number again.
+
+Parameters:
+				none
+
+Return Value:
+				integer value which is the tile number to be played.
+Algorithm:
+				none
+
+Assistance Received: https://stackoverflow.com/questions/5864540/infinite-loop-with-cin-when-typing-string-while-a-number-is-expected
+********************************************************************* */
 int User::GetValidTile()
-{
+{	
+	//tilenumber to be returned back
 	int tilenumber = 0;
 	do
 	{

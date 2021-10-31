@@ -9,96 +9,155 @@
 
 
 #include "Round.h"
-//Initializing the deck
+
+
+/* *********************************************************************
+Function Name:	Initializegame()
+
+Purpose:		
+                Create a new deck and use the deck ton initialize a new round and store the tiles from deck
+                to the player tiles, computer tiles, boneyard.
+Parameters:
+                none
+
+Return Value:
+                none.
+Algorithm:
+                none.
+
+Assistance Received: none
+********************************************************************* */
 void Round::Initializegame() {
     Deck mydeck = Deck();
 
     //Get the engine Tile based on the round of the game;
-     engineTile = mydeck.GetEngineTile(currentRound);
+     m_engineTile = mydeck.GetEngineTile(m_currentRound);
 
     //Shuffling the deck after getting the engine tile.
     mydeck.ShuffleDeck();
 
 
     //Computer Player for the game
-    playersList[0] = new Computer(mydeck.GetComputerTiles());
+    m_playersList[0] = new Computer(mydeck.GetComputerTiles());
 
     //User player initialized with the random 16 tiles being assigned.
-    playersList[1] = new User(mydeck.GetPlayerTiles());
+    m_playersList[1] = new User(mydeck.GetPlayerTiles());
 
 
     //Getting the boneyard tiles.
-    boneyardTiles = mydeck.GetBoneyardTiles();
+    m_boneyardTiles = mydeck.GetBoneyardTiles();
      
     //user train object
-    trainsList[0] = new Train("usertrain");
-    trainsList[0]->Addtile(engineTile);
+    m_trainsList[0] = new Train("usertrain");
+    m_trainsList[0]->Addtile(m_engineTile);
    
     //computer train object
-    trainsList[1] = new Train("computertrain");
-    trainsList[1]->Addtile(engineTile);
+    m_trainsList[1] = new Train("computertrain");
+    m_trainsList[1]->Addtile(m_engineTile);
   
     //mexican train object.
-    trainsList[2] = new Train("mexicantrain");
-    trainsList[2]->Addtile(engineTile);
+    m_trainsList[2] = new Train("mexicantrain");
+    m_trainsList[2]->Addtile(m_engineTile);
 
 }
-void Round::InitializefromFile(vector<Tile> userTrain, vector<Tile> computerTrain,
-    vector<Tile> mexicanTrain, bool a_usertrainmarked, bool a_computertrainmarked, vector<Tile> boneyard, vector<Tile> userTiles, vector <Tile> computerTiles) {
+
+
+/* *********************************************************************
+Function Name:	InitializefromFile()
+
+Purpose:
+              Initialize a game from file without creating a deck. All the tiles and variables required for 
+              initializing the game are passed as parameters.
+
+Parameters:
+                1) a_userTrain --> vector of tiles of the user train
+                2) a_computerTrain --> vector of tiles for the computer train.
+                3) a_mexicanTrain --> vector of tiles for the mexican train.
+                4) a_usertrainmarked --> boolean value that states if the user train is marked or not.
+                5) a_computertrainmarked --> boolean value that states if the computer train is marked or not.
+                6) a_boneyard --> vector of tiles for the boneyard
+                7) a_userTiles --> vector of tiles of the list of player tiles
+                8) a_computerTiles --> vector of tiles of the list of computer tiles.
+
+Return Value:
+                none.
+Algorithm:
+                none.
+
+Assistance Received: none
+********************************************************************* */
+void Round::InitializefromFile(vector<Tile> a_userTrain, vector<Tile> a_computerTrain,
+    vector<Tile> a_mexicanTrain, bool a_usertrainmarked, bool a_computertrainmarked, vector<Tile> a_boneyard, vector<Tile> a_userTiles, vector <Tile> a_computerTiles) {
     
   
     //Get the engine Tile as the first element of the user train.
-    engineTile = userTrain.at(0);
+    m_engineTile = a_userTrain.at(0);
     
     //Computer Player for the game
-    playersList[0] = new Computer(computerTiles);
+    m_playersList[0] = new Computer(a_computerTiles);
 
     //User player initialized with the random 16 tiles being assigned.
-    playersList[1] = new User(userTiles);
+    m_playersList[1] = new User(a_userTiles);
 
 
     //Getting the boneyard tiles.
-    boneyardTiles = boneyard;
+    m_boneyardTiles = a_boneyard;
 
     //user train object
-    trainsList[0] = new Train("usertrain");
-    for (int i = 0; i < userTrain.size(); i++) {
-        trainsList[0]->Addtile(userTrain[i]);
+    m_trainsList[0] = new Train("usertrain");
+    for (int i = 0; i < a_userTrain.size(); i++) {
+        m_trainsList[0]->Addtile(a_userTrain[i]);
     }
 
     //computer train object
-    trainsList[1] = new Train("computertrain");
-    for (int i =computerTrain.size()-1 ; i >=0; i--) {
-        trainsList[1]->Addtile(computerTrain[i]);
+    m_trainsList[1] = new Train("computertrain");
+    for (int i =a_computerTrain.size()-1 ; i >=0; i--) {
+        m_trainsList[1]->Addtile(a_computerTrain[i]);
     }
 
     //mexican train object.
-    trainsList[2] = new Train("mexicantrain");
+    m_trainsList[2] = new Train("mexicantrain");
 
     //as mexican train doesnot have engine tile added.
-    trainsList[2]->Addtile(engineTile);
-    for (int i = 0; i < mexicanTrain.size(); i++) {
-        trainsList[2]->Addtile(mexicanTrain[i]);
+    m_trainsList[2]->Addtile(m_engineTile);
+    for (int i = 0; i < a_mexicanTrain.size(); i++) {
+        m_trainsList[2]->Addtile(a_mexicanTrain[i]);
     }
 
     if (a_usertrainmarked) {
-        trainsList[0]->MarkTrain();
+        m_trainsList[0]->MarkTrain();
     }
     if (a_computertrainmarked) {
-        trainsList[1]->MarkTrain();
+        m_trainsList[1]->MarkTrain();
     }
 }
 
-//displays the trains and tiles on the screen.
+
+/* *********************************************************************
+Function Name:	    DisplayGame()   
+
+Purpose:
+                Helps to display user tiles, computer tiles, boneyard tiles and all the trains.
+                This function is refreshed after each move to show the updates to the user.
+
+Parameters:
+
+Return Value:
+                none.
+Algorithm:
+                none.
+
+Assistance Received: none
+********************************************************************* */
 void Round::DisplayGame()
 {
 
-    cout << "Current Round is : " << currentRound << endl;
-    cout << "Human score before this round: " << totalplayer << "  Computer score before this round: " << totalcomputer << endl;
+    cout << "Current Round is : " << m_currentRound << endl;
+    cout << "Human score before this round: " << m_totalplayer << "  Computer score before this round: " << m_totalcomputer << endl;
     cout << "____________________________________________________________________________________________" << endl;
 //------------------------------------------------------------------------------Displays Players remaing tiles---------------------------------------------------------
     cout << " Human Player Tiles:" << endl;
-    DisplayallTiles(playersList[1]->GetPlayerTiles());
+    DisplayallTiles(m_playersList[1]->GetPlayerTiles());
     cout << endl;
 
 //---------------------------------------displays the user player train-------------------------------------------------------------------------------------------
@@ -128,7 +187,7 @@ void Round::DisplayGame()
 
     //---------------------------------------displays the computer player train-------------------------------------------------------------------------------------------
     
-    int computerspacing = 86 - trainsList[1]->Size() * 5;
+    int computerspacing = 86 - m_trainsList[1]->Size() * 5;
     //this function displays the first line of the computer tiles and helps for displaying double tiles effectively  
     DisplayComputerdouble(computerspacing);
 
@@ -144,7 +203,7 @@ void Round::DisplayGame()
    
     cout << endl;
     cout << " Computer Tiles:" << endl;
-    DisplayallTiles(playersList[0]->GetPlayerTiles());
+    DisplayallTiles(m_playersList[0]->GetPlayerTiles());
 
     //---------------------------------------------------------------Displays remaining boneyard tiles-------------------------------------------------------------------------
     
@@ -153,20 +212,38 @@ void Round::DisplayGame()
     cout << " Next Boneyard Tile:->" ;
     //yDisplayalltiles if needed to display all boneyard tiles
     //DisplayallTiles(boneyardTiles);
-    if (boneyardTiles.size() == 0) { cout << "Empty"; }
+    if (m_boneyardTiles.size() == 0) { cout << "Empty"; }
     else {
-        cout << boneyardTiles.at(0).GetSide1() << "-" << boneyardTiles.at(0).GetSide2() << endl;
+        cout << m_boneyardTiles.at(0).GetSide1() << "-" << m_boneyardTiles.at(0).GetSide2() << endl;
     }
     cout << "--------------------------------------------------------------------------------------------------------" << endl;
   
 }
 
-void Round::DisplayComputerdouble(int spacing) {
-    //first line for computer train
-    cout << setw(spacing);
-    for (int i = trainsList[1]->Size() - 1; i > 0; i--) {
+/* *********************************************************************
+Function Name:	    DisplayComputerdouble
 
-        Tile currenttile = trainsList[1]->GetAllTiles().at(i);
+Purpose:
+                    Helps to set a tile vertical in case of the double tile. This is for line
+                    1 and 3 of the 3 lines.
+
+Parameters:
+                1) int a_spacing --> number of spaces used for the purpose of 
+                displaying a computer tile on the left side of engine tile.
+
+Return Value:
+                none.
+Algorithm:
+                if tile is double, display tile number on line 1 and 3. Else display  '---'
+
+Assistance Received: none
+********************************************************************* */
+void Round::DisplayComputerdouble(int a_spacing) {
+    //first line for computer train
+    cout << setw(a_spacing);
+    for (int i = m_trainsList[1]->Size() - 1; i > 0; i--) {
+
+        Tile currenttile = m_trainsList[1]->GetAllTiles().at(i);
 
         if (currenttile.GetSide1() == currenttile.GetSide2()) {
             cout << "--" << currenttile.GetSide1() << "--";
@@ -178,11 +255,30 @@ void Round::DisplayComputerdouble(int spacing) {
     cout << endl;
 }
 
-void Round::DisplayComputerMiddleTile(int spacing) {
-    cout << setw(spacing);
-    if (trainsList[1]->isTrainMarked()) { cout << "(M)"; }
-    for (int i = trainsList[1]->Size() - 1; i > 0; i--) {
-        Tile currenttile = trainsList[1]->GetAllTiles().at(i);
+
+/* *********************************************************************
+Function Name:	    DisplayComputerMiddleTile
+
+Purpose:
+                    Helps to set a tile vertical in case of the double tile. This is for line
+                    2 of the 3 lines.
+
+Parameters:
+                1) int a_spacing --> number of spaces used for the purpose of
+                displaying a computer tile on the left side of engine tile.
+
+Return Value:
+                none.
+Algorithm:
+                if tile is double, display '|-|' on the line 2. Else display tile horizontally.
+                Display "M" in case computer train is marked.
+Assistance Received: none
+********************************************************************* */
+void Round::DisplayComputerMiddleTile(int a_spacing) {
+    cout << setw(a_spacing);
+    if (m_trainsList[1]->isTrainMarked()) { cout << "(M)"; }
+    for (int i = m_trainsList[1]->Size() - 1; i > 0; i--) {
+        Tile currenttile = m_trainsList[1]->GetAllTiles().at(i);
         if (currenttile.GetSide1() == currenttile.GetSide2()) {
             cout << "|" << "-" << "|" << "-" << "|";
         }
@@ -193,12 +289,31 @@ void Round::DisplayComputerMiddleTile(int spacing) {
     cout << endl;
 }
 
-void Round::DisplayPlayerDouble(int spacing){
-    cout << setw(spacing);
 
-    for (int i = 1; i < trainsList[0]->Size(); i++) {
+/* *********************************************************************
+Function Name:	    DisplayPlayerdouble
 
-        Tile currenttile = trainsList[0]->GetAllTiles().at(i);
+Purpose:
+                    Helps to set a tile vertical in case of the double tile. This is for line
+                    1 and 3 of the 3 lines.
+
+Parameters:
+                1) int a_spacing --> number of spaces used for the purpose of
+                displaying a computer tile on the right side.
+
+Return Value:
+                none.
+Algorithm:
+                if tile is double, display tile number on line 1 and 3. Else display  '---'
+
+Assistance Received: none
+********************************************************************* */
+void Round::DisplayPlayerDouble(int a_spacing){
+    cout << setw(a_spacing);
+
+    for (int i = 1; i < m_trainsList[0]->Size(); i++) {
+
+        Tile currenttile = m_trainsList[0]->GetAllTiles().at(i);
 
         if (currenttile.GetSide1() == currenttile.GetSide2()) {
             cout << "--" << currenttile.GetSide1() << "--";
@@ -212,11 +327,27 @@ void Round::DisplayPlayerDouble(int spacing){
     cout << endl;
 }
 
-void Round::DisplayallTiles(vector<Tile> tiles)
+/* *********************************************************************
+Function Name:	    DisplayallTiles
+
+Purpose:            Helps to display all the tiles present in the vector.
+
+Parameters:
+                1) int a_tiles --> vector that contains tiles .
+
+Return Value:
+                none.
+Algorithm:
+                iterate through the vector to display all the tiles. After 6 tiles break a line so 
+                that tiles donot look clustered.
+
+Assistance Received: none
+********************************************************************* */
+void Round::DisplayallTiles(vector<Tile> a_tiles)
 {
     int counter = 0;
 
-    for (auto& it :tiles) {
+    for (auto& it :a_tiles) {
         counter++;
         // Print the values
         cout << " | " << "  (" << counter << ")-> " << it.GetSide1() << "-" << it.GetSide2() << " | ";
@@ -228,7 +359,142 @@ void Round::DisplayallTiles(vector<Tile> tiles)
     cout << endl;
 }
 
-void Round::SerializeandQuit(int userscore, int computerscore, string nextplayer)
+/* *********************************************************************
+Function Name:	    DisplayPlayerMiddleTile
+
+Purpose:
+                    Helps to set a tile vertical in case of the double tile. This is for line
+                    2 of the 3 lines.
+
+Parameters:
+                1) int a_spacing --> number of spaces used for the purpose of
+                displaying a human player train on the right side of engine tile.
+
+Return Value:
+                none.
+Algorithm:
+                if tile is double, display '|-|' on the line 2. Else display tile horizontally.
+                Also display 'M' in case of human train is marked
+
+Assistance Received: none
+********************************************************************* */
+void Round::DisplayPlayerMiddleTile(int a_spacing) {
+    cout << setw(a_spacing);
+
+
+    for (int i = 1; i < m_trainsList[0]->Size(); i++) {
+
+        Tile currenttile = m_trainsList[0]->GetAllTiles().at(i);
+        if (currenttile.GetSide1() == currenttile.GetSide2()) {
+            cout << "|" << "-" << "|" << "-" << "|";
+        }
+        else {
+            cout << "|" << currenttile.GetSide1() << "-" << currenttile.GetSide2() << "|";
+        }
+
+    }
+    if (m_trainsList[0]->isTrainMarked()) { cout << "(M)"; }
+    cout << endl;
+};
+
+
+
+/* *********************************************************************
+Function Name:	    DisplayMexicandouble
+
+Purpose:
+                    Helps to set a tile vertical in case of the double tile. This is for line
+                    1 and 3 of the 3 lines.
+
+Parameters:
+                1) int a_spacing --> number of spaces used for the purpose of
+                displaying a mexican train on the right side.
+
+Return Value:
+                none.
+Algorithm:
+                if tile is double, display tile number on line 1 and 3. Else display  '---'
+
+Assistance Received: none
+********************************************************************* */
+void Round::DisplayMexicanDouble(int a_spacing) {
+
+
+    cout << setw(a_spacing) << m_engineTile.GetSide1();
+
+    for (int i = 1; i < m_trainsList[2]->Size(); i++) {
+
+        Tile currenttile = m_trainsList[2]->GetAllTiles().at(i);
+
+        if (currenttile.GetSide1() == currenttile.GetSide2()) {
+            cout << "--" << currenttile.GetSide1() << "--";
+        }
+        else {
+            cout << "-" << "---" << "-";
+        }
+
+
+    }
+    cout << endl;
+}
+
+
+/* *********************************************************************
+Function Name:	    DisplayMexicanMiddleTile
+
+Purpose:
+                    Helps to set a tile vertical in case of the double tile. This is for line
+                    2 of the 3 lines.
+
+Parameters:
+                1) int a_spacing --> number of spaces used for the purpose of
+                displaying a mexican train on the right side of engine tile.
+
+Return Value:
+                none.
+Algorithm:
+                if tile is double, display '|-|' on the line 2. Else display tile horizontally.
+                Also display 'M' in case of human train is marked
+
+Assistance Received: none
+********************************************************************* */
+void Round::DisplayMexicanMiddleTile(int a_spacing) {
+    cout << setw(a_spacing) << "mexican train --> |";
+
+    for (int i = 1; i < m_trainsList[2]->Size(); i++) {
+
+        Tile currenttile = m_trainsList[2]->GetAllTiles().at(i);
+        if (currenttile.GetSide1() == currenttile.GetSide2()) {
+            cout << "|" << "-" << "|" << "-" << "|";
+        }
+        else {
+            cout << "|" << currenttile.GetSide1() << "-" << currenttile.GetSide2() << "|";
+        }
+
+    }
+    cout << endl;
+};
+/* *********************************************************************
+Function Name:	    SerializeandQuit
+
+Purpose:            Helps to write the current state of the game to the text file.
+
+Parameters:
+                1) int a_userscore --> current score of the human player
+                2) int a_computerscore --> current score of the computer player
+                3) a_nextplayer --> next player on the line
+
+Return Value:
+                none.
+Algorithm:
+                none.
+
+Assistance Received: none
+********************************************************************* */
+
+
+
+void Round::SerializeandQuit(int a_userscore, int a_computerscore, string a_nextplayer)
 {
     string filename;
     //this prevents against empty filename and at least 2 chars expected
@@ -243,47 +509,47 @@ void Round::SerializeandQuit(int userscore, int computerscore, string nextplayer
     ofstream MyFile(filename);
 
     // Write to the file
-    MyFile << "Round: " <<currentRound;
+    MyFile << "Round: " << m_currentRound;
     //for the computer
     MyFile << "\n\n";
     MyFile << "Computer:\n";
-    MyFile << "   Score: " << computerscore << endl;
+    MyFile << "   Score: " << m_computerscore << endl;
     MyFile << "   Hand: ";
-    for (int i = 0; i < playersList[0]->GetPlayerTiles().size();i++) {
-        MyFile << to_string(playersList[0]->GetPlayerTiles().at(i).GetSide1()) << "-" << to_string(playersList[0]->GetPlayerTiles().at(i).GetSide2()) << " ";
+    for (int i = 0; i < m_playersList[0]->GetPlayerTiles().size();i++) {
+        MyFile << to_string(m_playersList[0]->GetPlayerTiles().at(i).GetSide1()) << "-" << to_string(m_playersList[0]->GetPlayerTiles().at(i).GetSide2()) << " ";
     }
     MyFile << "\n";
     MyFile << "   Train: ";
-    if (trainsList[1]->isTrainMarked()) MyFile << "M ";
-    for (int i = trainsList[1]->GetAllTiles().size() - 1; i >= 0; i--) {
-        MyFile << to_string(trainsList[1]->GetAllTiles().at(i).GetSide2()) << "-" << to_string(trainsList[1]->GetAllTiles().at(i).GetSide1()) << " ";
+    if (m_trainsList[1]->isTrainMarked()) MyFile << "M ";
+    for (int i = m_trainsList[1]->GetAllTiles().size() - 1; i >= 0; i--) {
+        MyFile << to_string(m_trainsList[1]->GetAllTiles().at(i).GetSide2()) << "-" << to_string(m_trainsList[1]->GetAllTiles().at(i).GetSide1()) << " ";
     }
     //for the user 
     MyFile << "\n";
     MyFile << "Human:\n";
-    MyFile << "   Score: " << userscore << endl;
+    MyFile << "   Score: " << a_userscore << endl;
     MyFile << "   Hand: ";
-    for (int i = 0; i < playersList[1]->GetPlayerTiles().size(); i++) {
-        MyFile << to_string(playersList[1]->GetPlayerTiles().at(i).GetSide1()) << "-" << to_string(playersList[1]->GetPlayerTiles().at(i).GetSide2()) << " ";
+    for (int i = 0; i < m_playersList[1]->GetPlayerTiles().size(); i++) {
+        MyFile << to_string(m_playersList[1]->GetPlayerTiles().at(i).GetSide1()) << "-" << to_string(m_playersList[1]->GetPlayerTiles().at(i).GetSide2()) << " ";
     }
     MyFile << "\n";
     MyFile << "   Train: ";
-    for (int i = 0; i< trainsList[0]->GetAllTiles().size() ; i ++) {
-        MyFile << to_string(trainsList[0]->GetAllTiles().at(i).GetSide1()) << "-" << to_string(trainsList[0]->GetAllTiles().at(i).GetSide2()) << " ";
+    for (int i = 0; i< m_trainsList[0]->GetAllTiles().size() ; i ++) {
+        MyFile << to_string(m_trainsList[0]->GetAllTiles().at(i).GetSide1()) << "-" << to_string(m_trainsList[0]->GetAllTiles().at(i).GetSide2()) << " ";
     }
-    if (trainsList[0]->isTrainMarked()) MyFile << "M";
+    if (m_trainsList[0]->isTrainMarked()) MyFile << "M";
     MyFile << "\n\n";
     MyFile << "Mexican Train: ";
-    for (int i = 1; i < trainsList[2]->GetAllTiles().size(); i++) {
-        MyFile << to_string(trainsList[2]->GetAllTiles().at(i).GetSide1()) << "-" << to_string(trainsList[2]->GetAllTiles().at(i).GetSide2()) << " ";
+    for (int i = 1; i < m_trainsList[2]->GetAllTiles().size(); i++) {
+        MyFile << to_string(m_trainsList[2]->GetAllTiles().at(i).GetSide1()) << "-" << to_string(m_trainsList[2]->GetAllTiles().at(i).GetSide2()) << " ";
     }
     MyFile << "\n\n";
     MyFile << "Boneyard: ";
-    for (int i = 0; i <boneyardTiles.size(); i++) {
-        MyFile << to_string(boneyardTiles.at(i).GetSide1()) << "-" << to_string(boneyardTiles.at(i).GetSide2()) << " ";
+    for (int i = 0; i <m_boneyardTiles.size(); i++) {
+        MyFile << to_string(m_boneyardTiles.at(i).GetSide1()) << "-" << to_string(m_boneyardTiles.at(i).GetSide2()) << " ";
     }
     MyFile << "\n\n";
-    MyFile << "Next Player: " << nextplayer;
+    MyFile << "Next Player: " << a_nextplayer;
 
     // Close the file
     MyFile.close();
@@ -293,81 +559,48 @@ void Round::SerializeandQuit(int userscore, int computerscore, string nextplayer
     return;
 }
 
-void Round::DisplayPlayerMiddleTile(int spacing) {
-    cout << setw(spacing);
+
+/* *********************************************************************
+Function Name:	    PlayMoves
+
+Purpose:           Run the game until the game is over In order to do this this class display user moves,
+                    takes input and make changes to player and train objects.
+
+Parameters:
+                1) int a_playerfirst -->boolean value that states if the human player goes first
+                2) int a_ round --> integer value of the current round
+                3) int a_totaluserscore --> total human player score before this round
+                4) int a_totalcomputerscore --> total computer score before this round
 
 
-    for (int i = 1; i < trainsList[0]->Size(); i++) {
+Return Value:
+               boolean - false if game need to be serialized and quit, true otherwise.
+Algorithm:
+                none.
 
-        Tile currenttile = trainsList[0]->GetAllTiles().at(i);
-        if (currenttile.GetSide1() == currenttile.GetSide2()) {
-            cout << "|" << "-" << "|" << "-" << "|";
-        }
-        else {
-            cout << "|" << currenttile.GetSide1() << "-" << currenttile.GetSide2() << "|";
-        }
-
-    }
-    if (trainsList[0]->isTrainMarked()) { cout << "(M)"; }
-    cout << endl;
-};
-
-void Round::DisplayMexicanDouble(int spacing) {
-    
-    
-    cout << setw(spacing) << engineTile.GetSide1();
-
-    for (int i = 1; i < trainsList[2]->Size(); i++) {
-
-        Tile currenttile = trainsList[2]->GetAllTiles().at(i);
-
-        if (currenttile.GetSide1() == currenttile.GetSide2()) {
-            cout << "--" << currenttile.GetSide1() << "--";
-        }
-        else {
-            cout << "-" << "---" << "-";
-        }
+Assistance Received: none
+********************************************************************* */
 
 
-    }
-    cout << endl;
-}
-
-void Round::DisplayMexicanMiddleTile(int spacing) {
-    cout << setw(spacing) << "mexican train --> |";
-
-    for (int i = 1; i < trainsList[2]->Size(); i++) {
-
-        Tile currenttile = trainsList[2]->GetAllTiles().at(i);
-        if (currenttile.GetSide1() == currenttile.GetSide2()) {
-            cout << "|" << "-" << "|" << "-" << "|";
-        }
-        else {
-            cout << "|" << currenttile.GetSide1() << "-" << currenttile.GetSide2() << "|";
-        }
-
-    }
-    cout << endl;
-};
-
-bool Round::PlayMoves(bool playerfirst, int round, int a_totaluserscore, int a_totalcomputerscore)
+bool Round::PlayMoves(bool a_playerfirst, int a_round, int a_totaluserscore, int a_totalcomputerscore)
 {
     
-    
-    totalcomputer = a_totalcomputerscore;
-    totalplayer = a_totaluserscore;
+    //updates the global total score.
+    m_totalcomputer = a_totalcomputerscore;
+    m_totalplayer = a_totaluserscore;
     bool quit = false;
     DisplayGame();
     //this helps to run the player first or computer first sequence
-    if (playerfirst) {
+    if (a_playerfirst) {
         
+        //decides if the user can play one more move or not
         bool replay = false;
         int continousplay = 0;
        
         do
         { 
             //this will help the user to replay a turn in case of the orphan double
-            replay = playersList[1]->PlayMove(trainsList, boneyardTiles, continousplay,quit);
+            replay = m_playersList[1]->PlayMove(m_trainsList, m_boneyardTiles, continousplay,quit);
             system("CLS");
             DisplayGame();
             continousplay++;
@@ -390,7 +623,7 @@ bool Round::PlayMoves(bool playerfirst, int round, int a_totaluserscore, int a_t
 
         do
         {   //this will help the user to replay a turn in case of the orphan double
-            replay= playersList[0]->PlayMove(trainsList, boneyardTiles,continousplay,quit);
+            replay= m_playersList[0]->PlayMove(m_trainsList, m_boneyardTiles,continousplay,quit);
             system("CLS");
             DisplayGame();
             continousplay++;
@@ -410,7 +643,7 @@ bool Round::PlayMoves(bool playerfirst, int round, int a_totaluserscore, int a_t
             do
             {
                 //this will help the user to replay a turn in case of the orphan double
-                replay = playersList[1]->PlayMove(trainsList, boneyardTiles, continousplay,quit);
+                replay = m_playersList[1]->PlayMove(m_trainsList, m_boneyardTiles, continousplay,quit);
                 system("CLS");
                 DisplayGame();
                 continousplay++;
@@ -428,33 +661,62 @@ bool Round::PlayMoves(bool playerfirst, int round, int a_totaluserscore, int a_t
    
 
     //calculates the round score after the end of the game.
-    for (auto& it : playersList[1]->GetPlayerTiles()) {
+    for (auto& it : m_playersList[1]->GetPlayerTiles()) {
        
-        playerscore = playerscore+  it.GetSide1() + it.GetSide2();
+        m_playerscore = m_playerscore+  it.GetSide1() + it.GetSide2();
         
         
     }
-    cout << "Human Player's score for the round:" << playerscore << endl;
-    for (auto& it : playersList[0]->GetPlayerTiles()) {
+    cout << "Human Player's score for the round:" << m_playerscore << endl;
+    for (auto& it : m_playersList[0]->GetPlayerTiles()) {
 
-        computerscore = computerscore + it.GetSide1() + it.GetSide2();
+        m_computerscore = m_computerscore + it.GetSide1() + it.GetSide2();
       
         
     }
-    cout << "Computer Player's score for the round:" << computerscore << endl;
+    cout << "Computer Player's score for the round:" << m_computerscore << endl;
     
+    
+    //deleting the train and player objects pointer to prevent memory leak
+    for (int i = 0; i < 3; i++) {
+        m_trainsList[i]->~Train();
+        delete m_trainsList[i];
+    }
+    for (int i = 0; i < 2; i++) {
+        m_playersList[i]->~Player();
+        delete m_playersList[i];
+    }
+
     return true;
-      
+    
 }
 
+
+/* *********************************************************************
+Function Name:	    Playpossible
+
+Purpose:          This function checks if the game is over.
+
+Parameters:
+               none
+
+
+Return Value:
+               boolean - true if the game is over, false otherwise.
+Algorithm:
+               if one of the computer or human player has no tiles left game is over, else if both the 
+               trains are marked and there is no boneyard tiles left game is over.
+
+Assistance Received: none
+********************************************************************* */
 bool Round::Playpossible()
 {
     // if both user trains are marked and boneyard is empty.
-    if (boneyardTiles.size() == 0 && trainsList[0]->isTrainMarked() && trainsList[1]->isTrainMarked()) {
+    if (m_boneyardTiles.size() == 0 && m_trainsList[0]->isTrainMarked() && m_trainsList[1]->isTrainMarked()) {
         return false;
     }
     //if one of the player has emptied his hands.
-    else if ((playersList[0]->GetPlayerTiles().size() == 0) || (playersList[1]->GetPlayerTiles().size() == 0))
+    else if ((m_playersList[0]->GetPlayerTiles().size() == 0) || (m_playersList[1]->GetPlayerTiles().size() == 0))
     {
         return false;
     }

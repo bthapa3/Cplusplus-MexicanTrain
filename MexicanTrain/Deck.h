@@ -23,12 +23,12 @@ class Deck
 				for (int j = i; j <= 9;j++) 
 				{
 					Tile newTile = Tile(i, j);
-					deck.push_back(newTile);
+					m_deck.push_back(newTile);
 				}
 			}
 		}
 		inline vector<Tile> GetDeck() {
-			return deck;
+			return m_deck;
 		}
 		//for shuffling the deck
 		void ShuffleDeck();
@@ -44,6 +44,6 @@ class Deck
 		vector<Tile> GetBoneyardTiles();
 
 	private:
-		vector <Tile> deck;
+		vector <Tile> m_deck;
 };
 

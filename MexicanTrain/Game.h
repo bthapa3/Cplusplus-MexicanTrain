@@ -14,41 +14,43 @@ class Game
 	public:
 		Game() 
 		{
-			userfirst = false;
-			userscore = 0;
-			computerscore = 0;
-			currentround = 1;
-			initializedfromfile = false;
+			m_userfirst = false;
+			m_userscore = 0;
+			m_computerscore = 0;
+			m_currentround = 1;
+			m_initializedfromfile = false;
 		
 		}
 		void StartGame();
 
-		inline void addComputerscore(int score) {
-			computerscore = computerscore + score;
+		inline void addComputerscore(int a_score) {
+			m_computerscore = m_computerscore + a_score;
 		}
-		inline void addUserscore(int score) {
-			userscore = userscore + score;
+		inline void addUserscore(int a_score) {
+			m_userscore = m_userscore + a_score;
 		}
 		inline int getUserscore() {
-			return userscore;
+			return m_userscore;
 		}
 		inline int getComputerscore() {
-			return computerscore;
+			return m_computerscore;
 		}
 		inline void setInitializedfromFile(bool a_isinitialized) {
-			initializedfromfile = a_isinitialized;
+			m_initializedfromfile = a_isinitialized;
 
 		}
 
 		inline bool isInitializedfromFile() {
-			return initializedfromfile;
+			return m_initializedfromfile;
 		}
 		inline void setUserfirst(bool a_userfirst) {
-			userfirst = a_userfirst;
+			m_userfirst = a_userfirst;
 		}
 		inline bool isUserfirst() {
-			return userfirst;
+			return m_userfirst;
 		}
+
+		bool ReadfromFile(bool& computertrainmarked, bool& usertrainmarked, Round & newround);
 
 		void LineSplitter(string str, vector<string>& vect);
 
@@ -56,10 +58,10 @@ class Game
 
 	private:
 
-		bool userfirst;
-		int userscore;
-		int computerscore;
-		int currentround;
-		bool initializedfromfile;
+		bool m_userfirst;
+		int m_userscore;
+		int m_computerscore;
+		int m_currentround;
+		bool m_initializedfromfile;
 };
 
